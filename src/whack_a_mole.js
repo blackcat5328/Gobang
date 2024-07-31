@@ -39,7 +39,7 @@ window.initGame = (React, assetsUrl) => {
       }
     }, [timer, currentPlayer]);
 
-   const checkWin = (row, col, player) => {
+    const checkWin = (row, col, player) => {
       let count = 0;
       for (let i = 0; i < 15; i++) {
         if (board[row][i] === player) {
@@ -146,13 +146,31 @@ window.initGame = (React, assetsUrl) => {
       return bestScore;
     };
 
+    const isAdjacentToPiece = (board, row, col) => {
+      const directions = [
+        [-1, 0], [1, 0], [0, -1], [0, 1],
+        [-1, -1], [-1, 1], [1, -1], [1, 1]
+      ];
+
+      for (const [dx, dy] of directions) {
+        const newRow = row + dx;
+        const newCol = col + dy;
+        if (newRow >= 0 && newRow < 15 && newCol >= 0 && newCol < 15) {
+          if (board[newRow][newCol] !== 0) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
     const bestMove = (board) => {
       let move = null;
       let bestScore = -Infinity;
 
       for (let row = 0; row < 15; row++) {
         for (let col = 0; col < 15; col++) {
-          if (board[row][col] === 0) {
+          if (board[row][col] === 0 && isAdjacentToPiece(board, row, col)) {
             board[row][col] = 2;
             const score = minimax(board, 0, false);
             board[row][col] = 0;
