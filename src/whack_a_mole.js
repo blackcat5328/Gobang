@@ -7,6 +7,8 @@ window.initGame = (React, assetsUrl) => {
     const [winner, setWinner] = useState(0);
     const [timer, setTimer] = useState(60);
     const [timerInterval, setTimerInterval] = useState(null);
+    const [moveHistory, setMoveHistory] = useState([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
 
     useEffect(() => {
       if (winner === 0 && timer > 0) {
@@ -24,6 +26,10 @@ window.initGame = (React, assetsUrl) => {
         newBoard[row][col] = currentPlayer;
         setBoard(newBoard);
 
+        // Add the current move to the history
+        setMoveHistory([...moveHistory.slice(0, historyIndex + 1), { row, col, player: currentPlayer }]);
+        setHistoryIndex(historyIndex + 1);
+
         if (checkWin(row, col, currentPlayer)) {
           setWinner(currentPlayer);
         } else {
@@ -33,11 +39,41 @@ window.initGame = (React, assetsUrl) => {
       }
     };
 
+    const handleUndo = () => {
+      if (historyIndex >= 0) {
+        const { row, col, player } = moveHistory[historyIndex];
+        const newBoard = [...board];
+        newBoard[row][col] = 0;
+        setBoard(newBoard);
+        setCurrentPlayer(player === 1 ? 2 : 1);
+        setHistoryIndex(historyIndex - 1);
+        setWinner(0);
+        setTimer(60);
+      }
+    };
+
+    const handleRedo = () => {
+      if (historyIndex < moveHistory.length - 1) {
+        const { row, col, player } = moveHistory[historyIndex + 1];
+        const newBoard = [...board];
+        newBoard[row][col] = player;
+        setBoard(newBoard);
+        setCurrentPlayer(player === 1 ? 2 : 1);
+        setHistoryIndex(historyIndex + 1);
+        if (checkWin(row, col, player)) {
+          setWinner(player);
+        }
+        setTimer(60);
+      }
+    };
+
     const handleReset = () => {
       setBoard(Array(15).fill().map(() => Array(15).fill(0)));
       setCurrentPlayer(1);
       setWinner(0);
       setTimer(60);
+      setMoveHistory([]);
+      setHistoryIndex(-1);
       if (timerInterval) {
         clearInterval(timerInterval);
         setTimerInterval(null);
@@ -76,9 +112,23 @@ window.initGame = (React, assetsUrl) => {
           : `Player ${winner} wins!`
       ),
       React.createElement(
-        'button',
-        { onClick: handleReset },
-        'Reset'
+        'div',
+        null,
+        React.createElement(
+          'button',
+          { onClick: handleUndo },
+          'Undo'
+        ),
+        React.createElement(
+          'button',
+          { onClick: handleRedo },
+          'Redo'
+        ),
+        React.createElement(
+          'button',
+          { onClick: handleReset },
+          'Reset'
+        )
       )
     );
   };
