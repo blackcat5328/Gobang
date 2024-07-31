@@ -27,13 +27,12 @@ body {
 .cell {
   width: 30px;
   height: 30px;
-  background-color: #b5b5b5;
+  background-color: #eee;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 
 .cell.player1 {
 background-image: url('${assetsUrl}/player1.png');
