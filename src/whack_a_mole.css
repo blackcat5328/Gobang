@@ -35,9 +35,11 @@ body {
 }
 
 .cell.player1 {
-  background-color: #000;
+  background-image: url('${assetsUrl}/player1.png');
+  background-size: cover;
 }
 
 .cell.player2 {
-  background-color: #fff;
+  background-image: url('${assetsUrl}/player2.png');
+  background-size: cover;
 }
