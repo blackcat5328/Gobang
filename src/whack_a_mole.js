@@ -18,6 +18,7 @@ window.initGame = (React, assetsUrl) => {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [moveRecords, setMoveRecords] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
+    const [isAIEnabled, setIsAIEnabled] = useState(false); // New state for AI
 
     useEffect(() => {
       let interval;
@@ -185,12 +186,20 @@ window.initGame = (React, assetsUrl) => {
     };
 
     const handleAI = () => {
-      if (currentPlayer === 2 && winner === 0) {
+      if (isAIEnabled && currentPlayer === 2 && winner === 0) {
         const move = bestMove(board);
         if (move) {
           handleClick(move.row, move.col);
         }
       }
+    };
+
+    useEffect(() => {
+      handleAI(); // Check for AI move
+    }, [currentPlayer, winner, isAIEnabled]); // Trigger AI move on player change
+
+    const toggleAI = () => {
+      setIsAIEnabled(prev => !prev);
     };
 
     const handleUndo = () => {
@@ -277,7 +286,8 @@ window.initGame = (React, assetsUrl) => {
         React.createElement('button', { onClick: handleUndo }, 'Undo'),
         React.createElement('button', { onClick: handleRedo }, 'Redo'),
         React.createElement('button', { onClick: handleReset }, 'Reset'),
-        React.createElement('button', { onClick: toggleHistory }, showHistory ? 'Hide Steps' : 'Show All Steps')
+        React.createElement('button', { onClick: toggleHistory }, showHistory ? 'Hide Steps' : 'Show All Steps'),
+        React.createElement('button', { onClick: toggleAI }, isAIEnabled ? 'Disable AI' : 'Enable AI') // New AI toggle button
       ),
       showHistory && React.createElement(
         'div',
