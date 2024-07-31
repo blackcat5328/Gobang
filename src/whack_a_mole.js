@@ -199,8 +199,7 @@ window.initGame = (React, assetsUrl) => {
       )
     )
   ),
-  // Rest of the component
-);
+  
       React.createElement(
         'p',
         null,
