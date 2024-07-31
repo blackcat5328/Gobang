@@ -37,107 +37,115 @@ window.initGame = (React, assetsUrl) => {
     }, [timer, currentPlayer]);
 
     const checkWin = (row, col, player) => {
-  // Check horizontal
-  let count = 0;
-  for (let i = 0; i < 15; i++) {
-    if (board[row][i] === player) {
-      count++;
-      if (count === 4) {
-        return true;
+      // Check horizontal
+      let count = 0;
+      for (let i = 0; i < 15; i++) {
+        if (board[row][i] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
       }
-    } else {
-      count = 0;
-    }
-  }
 
-  // Check vertical
-  count = 0;
-  for (let i = 0; i < 15; i++) {
-    if (board[i][col] === player) {
-      count++;
-      if (count === 4) {
-        return true;
-      }
-    } else {
+      // Check vertical
       count = 0;
-    }
-  }
+      for (let i = 0; i < 15; i++) {
+        if (board[i][col] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+      }
 
-  // Check diagonal (top-left to bottom-right)
-  count = 0;
-  let r = row, c = col;
-  while (r >= 0 && c >= 0) {
-    if (board[r][c] === player) {
-      count++;
-      if (count === 4) {
-        return true;
-      }
-    } else {
+      // Check diagonal (top-left to bottom-right)
       count = 0;
-    }
-    r--;
-    c--;
-  }
-  r = row + 1, c = col + 1;
-  while (r < 15 && c < 15) {
-    if (board[r][c] === player) {
-      count++;
-      if (count === 4) {
-        return true;
+      let r = row, c = col;
+      while (r >= 0 && c >= 0) {
+        if (board[r][c] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+        r--;
+        c--;
       }
-    } else {
-      count = 0;
-    }
-    r++;
-    c++;
-  }
+      r = row + 1, c = col + 1;
+      while (r < 15 && c < 15) {
+        if (board[r][c] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+        r++;
+        c++;
+      }
 
-  // Check diagonal (bottom-left to top-right)
-  count = 0;
-  r = row, c = col;
-  while (r < 15 && c >= 0) {
-    if (board[r][c] === player) {
-      count++;
-      if (count === 4) {
-        return true;
-      }
-    } else {
+      // Check diagonal (bottom-left to top-right)
       count = 0;
-    }
-    r++;
-    c--;
-  }
-  r = row - 1, c = col + 1;
-  while (r >= 0 && c < 15) {
-    if (board[r][c] === player) {
-      count++;
-      if (count === 4) {
-        return true;
+      r = row, c = col;
+      while (r < 15 && c >= 0) {
+        if (board[r][c] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+        r++;
+        c--;
       }
-    } else {
-      count = 0;
-    }
-    r--;
-    c++;
-  }
+      r = row - 1, c = col + 1;
+      while (r >= 0 && c < 15) {
+        if (board[r][c] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+        r--;
+        c++;
+      }
 
-  return false;
-};
+      return false;
+    };
 
     const handleClick = (row, col) => {
       if (board[row][col] === 0 && winner === 0) {
-        const newBoard = board.map(row => row.slice());
-        newBoard[row][col] = currentPlayer;
-        setBoard(newBoard);
+        // Check if there are any adjacent chess pieces
+        if (
+          (row > 0 && board[row - 1][col] !== 0) ||
+          (row < 14 && board[row + 1][col] !== 0) ||
+          (col > 0 && board[row][col - 1] !== 0) ||
+          (col < 14 && board[row][col + 1] !== 0)
+        ) {
+          const newBoard = board.map(row => row.slice());
+          newBoard[row][col] = currentPlayer;
+          setBoard(newBoard);
 
-        setHistory([...history.slice(0, currentIndex + 1), newBoard]);
-        setCurrentIndex(currentIndex + 1);
+          setHistory([...history.slice(0, currentIndex + 1), newBoard]);
+          setCurrentIndex(currentIndex + 1);
 
-        if (checkWin(row, col, currentPlayer)) {
-          setWinner(currentPlayer);
-        } else {
-          setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
-          setTimer(60);
+          if (checkWin(row, col, currentPlayer)) {
+            setWinner(currentPlayer);
+          } else {
+            setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+            setTimer(60);
+          }
         }
       }
     };
@@ -176,37 +184,37 @@ window.initGame = (React, assetsUrl) => {
     };
 
     return React.createElement(
-    'div',
-    { className: "gobang" },
-    React.createElement('h2', null, "Gobang"),
-    React.createElement(
       'div',
-      { className: "game-board" },
-      board.map((row, rowIndex) =>
-        React.createElement(
-          'div',
-          { className: "row", key: rowIndex },
-          row.map((cell, colIndex) =>
-            React.createElement(
-              'div',
-              {
-                key: `${rowIndex}-${colIndex}`,
-                className: `cell ${cell === 1 ? 'player1' : cell === 2 ? 'player2' : ''}`,
-                style: {
-                  backgroundImage: cell === 1
-                    ? `url(${assetsUrl}/player1.png)`
-                    : cell === 2
-                      ? `url(${assetsUrl}/player2.png)`
-                      : 'none'
-                },
-                onClick: () => handleClick(rowIndex, colIndex)
-              }
+      { className: "gobang" },
+      React.createElement('h2', null, "Gobang"),
+      React.createElement(
+        'div',
+        { className: "game-board" },
+        board.map((row, rowIndex) =>
+          React.createElement(
+            'div',
+            { className: "row", key: rowIndex },
+            row.map((cell, colIndex) =>
+              React.createElement(
+                'div',
+                {
+                  key: `${rowIndex}-${colIndex}`,
+                  className: `cell ${cell === 1 ? 'player1' : cell === 2 ? 'player2' : ''}`,
+                  style: {
+                    backgroundImage: cell === 1
+                      ? `url(${assetsUrl}/player1.png)`
+                      : cell === 2
+                        ? `url(${assetsUrl}/player2.png)`
+                        : 'none'
+                  },
+                  onClick: () => handleClick(rowIndex, colIndex)
+                }
+              )
             )
           )
         )
-      )
-    ),
-  
+      ),
+
       React.createElement(
         'p',
         null,
