@@ -217,7 +217,7 @@ window.initGame = (React, assetsUrl) => {
         'p',
         null,
         winner === 0
-          ? `Current player: ${currentPlayer === 1 ? 'BLACK' : 'WHITE'} (${timer} seconds remaining).`
+          ? `Current player: ${currentPlayer === 1 ? 'Player 1 BLACK' : 'Player 2 WHITE'} (${timer} seconds remaining).`
           : `Player ${winner} wins!`
       ),
       React.createElement(
