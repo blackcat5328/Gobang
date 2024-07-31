@@ -1,50 +1,52 @@
-// This would be stored in the 'src' folder of the GitHub repository
-// whack-a-mole.js
 window.initGame = (React, assetsUrl) => {
   const { useState, useEffect } = React;
 
-  const WhackAMole = ({ assetsUrl }) => {
-    const [score, setScore] = useState(0);
-    const [activeMole, setActiveMole] = useState(null);
+  const Gobang = ({ assetsUrl }) => {
+    const [board, setBoard] = useState(Array(15).fill().map(() => Array(15).fill(0)));
+    const [currentPlayer, setCurrentPlayer] = useState(1);
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setActiveMole(Math.floor(Math.random() * 9));
-      }, 1000);
-      return () => clearInterval(interval);
-    }, []);
-
-    const whackMole = (index) => {
-      if (index === activeMole) {
-        setScore(score + 1);
-        setActiveMole(null);
+    const handleClick = (row, col) => {
+      if (board[row][col] === 0) {
+        const newBoard = [...board];
+        newBoard[row][col] = currentPlayer;
+        setBoard(newBoard);
+        setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
       }
     };
 
     return React.createElement(
       'div',
-      { className: "whack-a-mole" },
-      React.createElement('h2', null, "Whack-a-Mole"),
-      React.createElement('p', null, `Score: ${score}`),
+      { className: "gobang" },
+      React.createElement('h2', null, "Gobang"),
       React.createElement(
         'div',
         { className: "game-board" },
-        Array(9).fill().map((_, index) =>
+        board.map((row, rowIndex) =>
           React.createElement(
             'div',
-            {
-              key: index,
-              className: `mole ${index === activeMole ? 'active' : ''}`,
-              onClick: () => whackMole(index)
-            },
-            index === activeMole && React.createElement('img', { src: `${assetsUrl}/mole.png`, alt: "Mole" })
+            { className: "row", key: rowIndex },
+            row.map((cell, colIndex) =>
+              React.createElement(
+                'div',
+                {
+                  key: `${rowIndex}-${colIndex}`,
+                  className: `cell ${cell === 1 ? 'player1' : cell === 2 ? 'player2' : ''}`,
+                  onClick: () => handleClick(rowIndex, colIndex)
+                }
+              )
+            )
           )
         )
+      ),
+      React.createElement(
+        'p',
+        null,
+        `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'}`
       )
     );
   };
 
-  return () => React.createElement(WhackAMole, { assetsUrl: assetsUrl });
+  return () => React.createElement(Gobang, { assetsUrl: assetsUrl });
 };
 
-console.log('Whack-a-Mole game script loaded');
+console.log('Gobang game script loaded');
