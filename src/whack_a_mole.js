@@ -241,7 +241,7 @@ window.initGame = (React, assetsUrl) => {
         React.createElement(
           'button',
           { onClick: toggleHistory },
-          showHistory ? 'Hide Steps' : 'Show Steps'
+          showHistory ? 'Hide Steps' : 'Show All Steps'
         )
       ),
       showHistory && React.createElement(
