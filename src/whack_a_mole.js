@@ -1,16 +1,29 @@
 window.initGame = (React, assetsUrl) => {
   const { useState, useEffect } = React;
 
+  const checkWin = (board, currentPlayer) => {
+    // Implement the win condition check here
+    // (same as the previous code snippet)
+    // ...
+  };
+
   const Gobang = ({ assetsUrl }) => {
     const [board, setBoard] = useState(Array(15).fill().map(() => Array(15).fill(0)));
     const [currentPlayer, setCurrentPlayer] = useState(1);
+    const [winner, setWinner] = useState(null);
 
     const handleClick = (row, col) => {
-      if (board[row][col] === 0) {
+      if (board[row][col] === 0 && !winner) {
         const newBoard = [...board];
         newBoard[row][col] = currentPlayer;
         setBoard(newBoard);
-        setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+
+        if (checkWin(newBoard, currentPlayer)) {
+          setWinner(currentPlayer);
+          console.log(`Player ${currentPlayer} has won!`);
+        } else {
+          setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+        }
       }
     };
 
@@ -41,7 +54,7 @@ window.initGame = (React, assetsUrl) => {
       React.createElement(
         'p',
         null,
-        `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'}`
+        winner ? `Player ${winner} has won!` : `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'}`
       )
     );
   };
