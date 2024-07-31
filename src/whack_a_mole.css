@@ -27,7 +27,7 @@ body {
 .cell {
   width: 30px;
   height: 30px;
-  background-color: #eee;
+  background-color: ea4b4b;
   cursor: pointer;
   display: flex;
   justify-content: center;
