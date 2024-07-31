@@ -187,6 +187,22 @@ window.initGame = (React, assetsUrl) => {
       'div',
       { className: "gobang" },
       React.createElement('h2', null, "Gobang"),
+
+      // Display current player's image
+      React.createElement(
+        'div',
+        { className: "player-image" },
+        React.createElement(
+          'img',
+          {
+            src: currentPlayer === 1
+              ? `${assetsUrl}/player1.png`
+              : `${assetsUrl}/player2.png`,
+            alt: `Player ${currentPlayer}`
+          }
+        )
+      ),
+
       React.createElement(
         'div',
         { className: "game-board" },
