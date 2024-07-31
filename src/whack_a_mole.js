@@ -37,8 +37,92 @@ window.initGame = (React, assetsUrl) => {
     }, [timer, currentPlayer]);
 
     const checkWin = (row, col, player) => {
-      // (code omitted for brevity)
-    };
+  // Check horizontal
+  let count = 0;
+  for (let i = 0; i < 15; i++) {
+    if (board[row][i] === player) {
+      count++;
+      if (count === 4) {
+        return true;
+      }
+    } else {
+      count = 0;
+    }
+  }
+
+  // Check vertical
+  count = 0;
+  for (let i = 0; i < 15; i++) {
+    if (board[i][col] === player) {
+      count++;
+      if (count === 4) {
+        return true;
+      }
+    } else {
+      count = 0;
+    }
+  }
+
+  // Check diagonal (top-left to bottom-right)
+  count = 0;
+  let r = row, c = col;
+  while (r >= 0 && c >= 0) {
+    if (board[r][c] === player) {
+      count++;
+      if (count === 4) {
+        return true;
+      }
+    } else {
+      count = 0;
+    }
+    r--;
+    c--;
+  }
+  r = row + 1, c = col + 1;
+  while (r < 15 && c < 15) {
+    if (board[r][c] === player) {
+      count++;
+      if (count === 4) {
+        return true;
+      }
+    } else {
+      count = 0;
+    }
+    r++;
+    c++;
+  }
+
+  // Check diagonal (bottom-left to top-right)
+  count = 0;
+  r = row, c = col;
+  while (r < 15 && c >= 0) {
+    if (board[r][c] === player) {
+      count++;
+      if (count === 4) {
+        return true;
+      }
+    } else {
+      count = 0;
+    }
+    r++;
+    c--;
+  }
+  r = row - 1, c = col + 1;
+  while (r >= 0 && c < 15) {
+    if (board[r][c] === player) {
+      count++;
+      if (count === 4) {
+        return true;
+      }
+    } else {
+      count = 0;
+    }
+    r--;
+    c++;
+  }
+
+  return false;
+};
 
     const handleClick = (row, col) => {
       if (board[row][col] === 0 && winner === 0) {
