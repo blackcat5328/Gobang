@@ -176,29 +176,36 @@ window.initGame = (React, assetsUrl) => {
     };
 
     return React.createElement(
-  'div',
-  { className: "gobang" },
-  React.createElement('h2', null, "Gobang"),
-  React.createElement(
     'div',
-    { className: "game-board" },
-    board.map((row, rowIndex) =>
-      React.createElement(
-        'div',
-        { className: "row", key: rowIndex },
-        row.map((cell, colIndex) =>
-          React.createElement(
-            'div',
-            {
-              key: `${rowIndex}-${colIndex}`,
-              className: `cell ${cell === 1 ? 'player1' : cell === 2 ? 'player2' : ''}`,
-              onClick: () => handleClick(rowIndex, colIndex)
-            }
+    { className: "gobang" },
+    React.createElement('h2', null, "Gobang"),
+    React.createElement(
+      'div',
+      { className: "game-board" },
+      board.map((row, rowIndex) =>
+        React.createElement(
+          'div',
+          { className: "row", key: rowIndex },
+          row.map((cell, colIndex) =>
+            React.createElement(
+              'div',
+              {
+                key: `${rowIndex}-${colIndex}`,
+                className: `cell ${cell === 1 ? 'player1' : cell === 2 ? 'player2' : ''}`,
+                style: {
+                  backgroundImage: cell === 1
+                    ? `url(${assetsUrl}/player1.png)`
+                    : cell === 2
+                      ? `url(${assetsUrl}/player2.png)`
+                      : 'none'
+                },
+                onClick: () => handleClick(rowIndex, colIndex)
+              }
+            )
           )
         )
       )
-    )
-  ),
+    ),
   
       React.createElement(
         'p',
