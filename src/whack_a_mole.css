@@ -1,0 +1,30 @@
+/* whack-a-mole.css */
+.whack-a-mole {
+  text-align: center;
+}
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-gap: 10px;
+  margin: 20px auto;
+  width: 320px;
+}
+
+.mole {
+  width: 100px;
+  height: 100px;
+  background-color: #8B4513;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.mole.active {
+  background-color: #228B22;
+}
+
+.mole img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
