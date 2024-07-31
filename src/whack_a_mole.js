@@ -37,67 +37,96 @@ window.initGame = (React, assetsUrl) => {
     }, [timer, currentPlayer]);
 
     const checkWin = (row, col, player) => {
-      let count = 0;
-
       // Check horizontal
+      let count = 0;
       for (let i = 0; i < 15; i++) {
-        count = (board[row][i] === player) ? count + 1 : 0;
-        if (count === 4) return true;
+        if (board[row][i] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
       }
 
       // Check vertical
       count = 0;
       for (let i = 0; i < 15; i++) {
-        count = (board[i][col] === player) ? count + 1 : 0;
-        if (count === 4) return true;
+        if (board[i][col] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
       }
 
       // Check diagonal (top-left to bottom-right)
       count = 0;
       let r = row, c = col;
       while (r >= 0 && c >= 0) {
-        count = (board[r][c] === player) ? count + 1 : 0;
-        if (count === 4) return true;
-        r--; c--;
+        if (board[r][c] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+        r--;
+        c--;
       }
-      r = row + 1; c = col + 1;
+      r = row + 1, c = col + 1;
       while (r < 15 && c < 15) {
-        count = (board[r][c] === player) ? count + 1 : 0;
-        if (count === 4) return true;
-        r++; c++;
+        if (board[r][c] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+        r++;
+        c++;
       }
 
       // Check diagonal (bottom-left to top-right)
       count = 0;
-      r = row; c = col;
+      r = row, c = col;
       while (r < 15 && c >= 0) {
-        count = (board[r][c] === player) ? count + 1 : 0;
-        if (count === 4) return true;
-        r++; c--;
+        if (board[r][c] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+        r++;
+        c--;
       }
-      r = row - 1; c = col + 1;
+      r = row - 1, c = col + 1;
       while (r >= 0 && c < 15) {
-        count = (board[r][c] === player) ? count + 1 : 0;
-        if (count === 4) return true;
-        r--; c++;
+        if (board[r][c] === player) {
+          count++;
+          if (count === 4) {
+            return true;
+          }
+        } else {
+          count = 0;
+        }
+        r--;
+        c++;
       }
 
       return false;
     };
 
-    const aiMove = () => {
-      for (let row = 0; row < 15; row++) {
-        for (let col = 0; col < 15; col++) {
-          if (board[row][col] === 0) {
-            handleClick(row, col);
-            return;
-          }
-        }
-      }
-    };
-
     const handleClick = (row, col) => {
       if (board[row][col] === 0 && winner === 0) {
+        // Check if there are any adjacent chess pieces
         if (
           (row > 0 && board[row - 1][col] !== 0) ||
           (row < 14 && board[row + 1][col] !== 0) ||
@@ -141,6 +170,7 @@ window.initGame = (React, assetsUrl) => {
 
     const handleReset = () => {
       const newBoard = Array(15).fill().map(() => Array(15).fill(0));
+      // Place initial chess pieces
       newBoard[7][7] = 1;
       newBoard[7][8] = 2;
       newBoard[8][7] = 2;
@@ -151,12 +181,6 @@ window.initGame = (React, assetsUrl) => {
       setCurrentPlayer(1);
       setWinner(0);
       setTimer(60);
-    };
-
-    const handleAIMove = () => {
-      if (currentPlayer === 2 && winner === 0) {
-        aiMove();
-      }
     };
 
     return React.createElement(
@@ -190,6 +214,7 @@ window.initGame = (React, assetsUrl) => {
           )
         )
       ),
+
       React.createElement(
         'p',
         null,
@@ -214,11 +239,6 @@ window.initGame = (React, assetsUrl) => {
           'button',
           { onClick: handleReset },
           'Reset'
-        ),
-        React.createElement(
-          'button',
-          { onClick: handleAIMove },
-          'AI Move'
         )
       )
     );
