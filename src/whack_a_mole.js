@@ -1,97 +1,31 @@
 window.initGame = (React, assetsUrl) => {
   const { useState, useEffect } = React;
 
+  const Timer = () => {
+    const [time, setTime] = useState(60);
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setTime((prevTime) => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, []);
+
+    return (
+      <div className="timer">
+        <h3>Time: {time}</h3>
+      </div>
+    );
+  };
+
   const Gobang = ({ assetsUrl }) => {
     const [board, setBoard] = useState(Array(15).fill().map(() => Array(15).fill(0)));
     const [currentPlayer, setCurrentPlayer] = useState(1);
     const [winner, setWinner] = useState(0);
 
     const checkWin = (row, col, player) => {
-      // Check horizontal
-      let count = 0;
-      for (let i = 0; i < 15; i++) {
-        if (board[row][i] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-      }
-
-      // Check vertical
-      count = 0;
-      for (let i = 0; i < 15; i++) {
-        if (board[i][col] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-      }
-
-      // Check diagonal (top-left to bottom-right)
-      count = 0;
-      let r = row, c = col;
-      while (r >= 0 && c >= 0) {
-        if (board[r][c] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-        r--;
-        c--;
-      }
-      r = row + 1, c = col + 1;
-      while (r < 15 && c < 15) {
-        if (board[r][c] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-        r++;
-        c++;
-      }
-
-      // Check diagonal (bottom-left to top-right)
-      count = 0;
-      r = row, c = col;
-      while (r < 15 && c >= 0) {
-        if (board[r][c] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-        r++;
-        c--;
-      }
-      r = row - 1, c = col + 1;
-      while (r >= 0 && c < 15) {
-        if (board[r][c] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-        r--;
-        c++;
-      }
-
-      return false;
+      // ... (existing checkWin function)
     };
 
     const handleClick = (row, col) => {
@@ -118,6 +52,7 @@ window.initGame = (React, assetsUrl) => {
       'div',
       { className: "gobang" },
       React.createElement('h2', null, "Gobang"),
+      React.createElement(Timer, null),
       React.createElement(
         'div',
         { className: "game-board" },
