@@ -15,7 +15,7 @@ window.initGame = (React, assetsUrl) => {
     const [currentPlayer, setCurrentPlayer] = useState(1);
     const [winner, setWinner] = useState(0);
     const [timer, setTimer] = useState(60);
-    const [elapsedTime, setElapsedTime] = useState(0); // Track elapsed time
+    const [elapsedTime, setElapsedTime] = useState(0);
     const [moveRecords, setMoveRecords] = useState([]);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ window.initGame = (React, assetsUrl) => {
       if (winner === 0) {
         interval = setInterval(() => {
           setTimer(prevTimer => prevTimer - 1);
-          setElapsedTime(prevTime => prevTime + 1); // Increment elapsed time
+          setElapsedTime(prevTime => prevTime + 1);
         }, 1000);
       } else {
         clearInterval(interval);
@@ -39,41 +39,32 @@ window.initGame = (React, assetsUrl) => {
     }, [timer, currentPlayer]);
 
     const checkWin = (row, col, player) => {
-      // Check horizontal
       let count = 0;
       for (let i = 0; i < 15; i++) {
         if (board[row][i] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
       }
 
-      // Check vertical
       count = 0;
       for (let i = 0; i < 15; i++) {
         if (board[i][col] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
       }
 
-      // Check diagonal (top-left to bottom-right)
       count = 0;
       let r = row, c = col;
       while (r >= 0 && c >= 0) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -84,9 +75,7 @@ window.initGame = (React, assetsUrl) => {
       while (r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -94,15 +83,12 @@ window.initGame = (React, assetsUrl) => {
         c++;
       }
 
-      // Check diagonal (bottom-left to top-right)
       count = 0;
       r = row, c = col;
       while (r < 15 && c >= 0) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -113,9 +99,7 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -184,7 +168,7 @@ window.initGame = (React, assetsUrl) => {
       setCurrentPlayer(1);
       setWinner(0);
       setTimer(60);
-      setElapsedTime(0); // Reset elapsed time
+      setElapsedTime(0);
       setMoveRecords([]);
     };
 
@@ -192,14 +176,11 @@ window.initGame = (React, assetsUrl) => {
       'div',
       { className: "gobang" },
       React.createElement('h2', null, "Gobang"),
-      
-      // Display elapsed time under the title
       React.createElement(
         'p',
         null,
         `Elapsed time: ${elapsedTime} seconds.`
       ),
-
       React.createElement(
         'div',
         { className: "game-board" },
@@ -227,7 +208,6 @@ window.initGame = (React, assetsUrl) => {
           )
         )
       ),
-
       React.createElement(
         'p',
         null,
@@ -235,7 +215,6 @@ window.initGame = (React, assetsUrl) => {
           ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (${timer} seconds remaining).`
           : `Player ${winner} wins!`
       ),
-
       React.createElement(
         'div',
         { className: "controls" },
@@ -255,7 +234,6 @@ window.initGame = (React, assetsUrl) => {
           'Reset'
         )
       ),
-
       React.createElement(
         'div',
         { className: "move-records" },
@@ -263,7 +241,7 @@ window.initGame = (React, assetsUrl) => {
         React.createElement(
           'ul',
           null,
-          moveRecords.map((record, index) => 
+          moveRecords.slice(-5).map((record, index) => 
             React.createElement('li', { key: index }, record)
           )
         )
