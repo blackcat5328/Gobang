@@ -192,6 +192,14 @@ window.initGame = (React, assetsUrl) => {
       'div',
       { className: "gobang" },
       React.createElement('h2', null, "Gobang"),
+      
+      // Display elapsed time under the title
+      React.createElement(
+        'p',
+        null,
+        `Elapsed time: ${elapsedTime} seconds.`
+      ),
+
       React.createElement(
         'div',
         { className: "game-board" },
@@ -224,7 +232,7 @@ window.initGame = (React, assetsUrl) => {
         'p',
         null,
         winner === 0
-          ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (${timer} seconds remaining). Elapsed time: ${elapsedTime} seconds.`
+          ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (${timer} seconds remaining).`
           : `Player ${winner} wins!`
       ),
 
