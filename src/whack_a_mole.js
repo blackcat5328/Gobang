@@ -18,7 +18,6 @@ window.initGame = (React, assetsUrl) => {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [moveRecords, setMoveRecords] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
-    const [isAIEnabled, setIsAIEnabled] = useState(false); // New state for AI
 
     useEffect(() => {
       let interval;
@@ -114,92 +113,29 @@ window.initGame = (React, assetsUrl) => {
 
     const handleClick = (row, col) => {
       if (board[row][col] === 0 && winner === 0) {
-        const newBoard = board.map(row => row.slice());
-        newBoard[row][col] = currentPlayer;
-        setBoard(newBoard);
-        setHistory([...history.slice(0, currentIndex + 1), newBoard]);
-        setCurrentIndex(currentIndex + 1);
-        setMoveRecords([...moveRecords, `Player ${currentPlayer}: (${row}, ${col})`]);
+        if (
+          (row > 0 && board[row - 1][col] !== 0) ||
+          (row < 14 && board[row + 1][col] !== 0) ||
+          (col > 0 && board[row][col - 1] !== 0) ||
+          (col < 14 && board[row][col + 1] !== 0)
+        ) {
+          const newBoard = board.map(row => row.slice());
+          newBoard[row][col] = currentPlayer;
+          setBoard(newBoard);
 
-        if (checkWin(row, col, currentPlayer)) {
-          setWinner(currentPlayer);
-        } else {
-          setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
-          setTimer(60);
-        }
-      }
-    };
+          setHistory([...history.slice(0, currentIndex + 1), newBoard]);
+          setCurrentIndex(currentIndex + 1);
 
-    const minimax = (board, depth, isMaximizing) => {
-      const scores = { 1: -10, 2: 10, 0: 0 };
-      let bestScore = isMaximizing ? -Infinity : Infinity;
+          setMoveRecords([...moveRecords, `Player ${currentPlayer}: (${row}, ${col})`]);
 
-      for (let row = 0; row < 15; row++) {
-        for (let col = 0; col < 15; col++) {
-          if (board[row][col] === 0) {
-            board[row][col] = isMaximizing ? 2 : 1;
-            const score = checkWin(row, col, isMaximizing ? 2 : 1) ? scores[isMaximizing ? 2 : 1] : minimax(board, depth + 1, !isMaximizing);
-            board[row][col] = 0;
-            bestScore = isMaximizing ? Math.max(score, bestScore) : Math.min(score, bestScore);
+          if (checkWin(row, col, currentPlayer)) {
+            setWinner(currentPlayer);
+          } else {
+            setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+            setTimer(60);
           }
         }
       }
-      return bestScore;
-    };
-
-    const isAdjacentToPiece = (board, row, col) => {
-      const directions = [
-        [-1, 0], [1, 0], [0, -1], [0, 1],
-        [-1, -1], [-1, 1], [1, -1], [1, 1]
-      ];
-
-      for (const [dx, dy] of directions) {
-        const newRow = row + dx;
-        const newCol = col + dy;
-        if (newRow >= 0 && newRow < 15 && newCol >= 0 && newCol < 15) {
-          if (board[newRow][newCol] !== 0) {
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-
-    const bestMove = (board) => {
-      let move = null;
-      let bestScore = -Infinity;
-
-      for (let row = 0; row < 15; row++) {
-        for (let col = 0; col < 15; col++) {
-          if (board[row][col] === 0 && isAdjacentToPiece(board, row, col)) {
-            board[row][col] = 2;
-            const score = minimax(board, 0, false);
-            board[row][col] = 0;
-            if (score > bestScore) {
-              bestScore = score;
-              move = { row, col };
-            }
-          }
-        }
-      }
-      return move;
-    };
-
-    const handleAI = () => {
-      if (isAIEnabled && currentPlayer === 2 && winner === 0) {
-        const move = bestMove(board);
-        if (move) {
-          handleClick(move.row, move.col);
-        }
-      }
-    };
-
-    useEffect(() => {
-      handleAI(); // Check for AI move
-    }, [currentPlayer, winner, isAIEnabled]); // Trigger AI move on player change
-
-    const toggleAI = () => {
-      setIsAIEnabled(prev => !prev);
     };
 
     const handleUndo = () => {
@@ -245,7 +181,11 @@ window.initGame = (React, assetsUrl) => {
       'div',
       { className: "gobang" },
       React.createElement('h2', null, "Gobang"),
-      React.createElement('p', null, `Elapsed time: ${elapsedTime} seconds.`),
+      React.createElement(
+        'p',
+        null,
+        `Elapsed time: ${elapsedTime} seconds.`
+      ),
       React.createElement(
         'div',
         { className: "game-board" },
@@ -277,17 +217,32 @@ window.initGame = (React, assetsUrl) => {
         'p',
         null,
         winner === 0
-          ? `Current player: ${currentPlayer === 1 ? 'Player 1 BLACK ' : 'Player 2 WHITE'} (${timer} seconds remaining).`
+          ? `Current player: ${currentPlayer === 1 ? 'BLACK' : 'WHITE'} (${timer} seconds remaining).`
           : `Player ${winner} wins!`
       ),
       React.createElement(
         'div',
         { className: "controls" },
-        React.createElement('button', { onClick: handleUndo }, 'Undo'),
-        React.createElement('button', { onClick: handleRedo }, 'Redo'),
-        React.createElement('button', { onClick: handleReset }, 'Reset'),
-        React.createElement('button', { onClick: toggleHistory }, showHistory ? 'Hide Steps' : 'Show All Steps'),
-        React.createElement('button', { onClick: toggleAI }, isAIEnabled ? 'Disable AI' : 'Enable AI') // New AI toggle button
+        React.createElement(
+          'button',
+          { onClick: handleUndo },
+          'Undo'
+        ),
+        React.createElement(
+          'button',
+          { onClick: handleRedo },
+          'Redo'
+        ),
+        React.createElement(
+          'button',
+          { onClick: handleReset },
+          'Reset'
+        ),
+        React.createElement(
+          'button',
+          { onClick: toggleHistory },
+          showHistory ? 'Hide Steps' : 'Show All Steps'
+        )
       ),
       showHistory && React.createElement(
         'div',
@@ -296,7 +251,7 @@ window.initGame = (React, assetsUrl) => {
         React.createElement(
           'ul',
           null,
-          moveRecords.map((record, index) =>
+          moveRecords.map((record, index) => 
             React.createElement('li', { key: index }, record)
           )
         )
@@ -308,7 +263,7 @@ window.initGame = (React, assetsUrl) => {
         React.createElement(
           'ul',
           null,
-          moveRecords.slice(-5).map((record, index) =>
+          moveRecords.slice(-5).map((record, index) => 
             React.createElement('li', { key: index }, record)
           )
         )
