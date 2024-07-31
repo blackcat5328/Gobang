@@ -34,7 +34,7 @@ window.initGame = (React, assetsUrl) => {
       for (let i = 0; i < 15; i++) {
         if (board[row][i] === player) {
           count++;
-          if (count === 5) {
+          if (count === 4) {
             return true;
           }
         } else {
@@ -47,7 +47,7 @@ window.initGame = (React, assetsUrl) => {
       for (let i = 0; i < 15; i++) {
         if (board[i][col] === player) {
           count++;
-          if (count === 5) {
+          if (count === 4) {
             return true;
           }
         } else {
@@ -61,7 +61,7 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c >= 0) {
         if (board[r][c] === player) {
           count++;
-          if (count === 5) {
+          if (count === 4) {
             return true;
           }
         } else {
@@ -74,7 +74,7 @@ window.initGame = (React, assetsUrl) => {
       while (r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 5) {
+          if (count === 4) {
             return true;
           }
         } else {
@@ -90,7 +90,7 @@ window.initGame = (React, assetsUrl) => {
       while (r < 15 && c >= 0) {
         if (board[r][c] === player) {
           count++;
-          if (count === 5) {
+          if (count === 4) {
             return true;
           }
         } else {
@@ -103,7 +103,7 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 5) {
+          if (count === 4) {
             return true;
           }
         } else {
