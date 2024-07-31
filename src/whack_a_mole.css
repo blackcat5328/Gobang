@@ -1,65 +1,37 @@
-/* Reset some default styles */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
-  font-family: Arial, sans-serif;
-  background-color: #1c1c1c;
-  color: #f2f2f2;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
-  padding: 20px;
+  margin: 0;
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #4d4d4d;
+.gobang {
+  text-align: center;
 }
 
-.header h1 {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.game-area {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  grid-gap: 1px;
   margin-top: 20px;
+  background-color: #000;
 }
 
-.game-area canvas {
-  max-width: 100%;
-  max-height: 100%;
+.row {
+  display: contents;
 }
 
-.footer {
+.cell {
+  width: 30px;
+  height: 30px;
+  background-color: #eee;
+  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 10px;
-  border-top: 1px solid #4d4d4d;
-}
-
-.footer button {
-  background-color: #4d4d4d;
-  color: #f2f2f2;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.footer button:hover {
-  background-color: #606060;
 }
 
 .cell.player1 {
