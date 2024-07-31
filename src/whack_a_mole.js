@@ -5,6 +5,26 @@ window.initGame = (React, assetsUrl) => {
     const [board, setBoard] = useState(Array(15).fill().map(() => Array(15).fill(0)));
     const [currentPlayer, setCurrentPlayer] = useState(1);
     const [winner, setWinner] = useState(0);
+    const [timer, setTimer] = useState(60);
+
+    useEffect(() => {
+      let interval;
+      if (winner === 0) {
+        interval = setInterval(() => {
+          setTimer((prevTimer) => prevTimer - 1);
+        }, 1000);
+      } else {
+        clearInterval(interval);
+      }
+      return () => clearInterval(interval);
+    }, [winner]);
+
+    useEffect(() => {
+      if (timer === 0) {
+        setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+        setTimer(60);
+      }
+    }, [timer, currentPlayer]);
 
     const checkWin = (row, col, player) => {
       // Check horizontal
@@ -104,6 +124,7 @@ window.initGame = (React, assetsUrl) => {
           setWinner(currentPlayer);
         } else {
           setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+          setTimer(60);
         }
       }
     };
@@ -112,6 +133,7 @@ window.initGame = (React, assetsUrl) => {
       setBoard(Array(15).fill().map(() => Array(15).fill(0)));
       setCurrentPlayer(1);
       setWinner(0);
+      setTimer(60);
     };
 
     return React.createElement(
@@ -142,7 +164,7 @@ window.initGame = (React, assetsUrl) => {
         'p',
         null,
         winner === 0
-          ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'}`
+          ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (${timer} seconds remaining)`
           : `Player ${winner} wins!`
       ),
       React.createElement(
