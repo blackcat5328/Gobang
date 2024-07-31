@@ -5,97 +5,21 @@ window.initGame = (React, assetsUrl) => {
     const [board, setBoard] = useState(Array(15).fill().map(() => Array(15).fill(0)));
     const [currentPlayer, setCurrentPlayer] = useState(1);
     const [winner, setWinner] = useState(0);
+    const [timer, setTimer] = useState(60);
+    const [timerInterval, setTimerInterval] = useState(null);
 
-    const checkWin = (row, col, player) => {
-      // Check horizontal
-      let count = 0;
-      for (let i = 0; i < 15; i++) {
-        if (board[row][i] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
+    useEffect(() => {
+      if (winner === 0 && timer > 0) {
+        const interval = setInterval(() => {
+          setTimer(prevTimer => prevTimer - 1);
+        }, 1000);
+        setTimerInterval(interval);
+        return () => clearInterval(interval);
       }
-
-      // Check vertical
-      count = 0;
-      for (let i = 0; i < 15; i++) {
-        if (board[i][col] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-      }
-
-      // Check diagonal (top-left to bottom-right)
-      count = 0;
-      let r = row, c = col;
-      while (r >= 0 && c >= 0) {
-        if (board[r][c] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-        r--;
-        c--;
-      }
-      r = row + 1, c = col + 1;
-      while (r < 15 && c < 15) {
-        if (board[r][c] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-        r++;
-        c++;
-      }
-
-      // Check diagonal (bottom-left to top-right)
-      count = 0;
-      r = row, c = col;
-      while (r < 15 && c >= 0) {
-        if (board[r][c] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-        r++;
-        c--;
-      }
-      r = row - 1, c = col + 1;
-      while (r >= 0 && c < 15) {
-        if (board[r][c] === player) {
-          count++;
-          if (count === 5) {
-            return true;
-          }
-        } else {
-          count = 0;
-        }
-        r--;
-        c++;
-      }
-
-      return false;
-    };
+    }, [winner, timer]);
 
     const handleClick = (row, col) => {
-      if (board[row][col] === 0 && winner === 0) {
+      if (board[row][col] === 0 && winner === 0 && timer > 0) {
         const newBoard = [...board];
         newBoard[row][col] = currentPlayer;
         setBoard(newBoard);
@@ -104,6 +28,7 @@ window.initGame = (React, assetsUrl) => {
           setWinner(currentPlayer);
         } else {
           setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+          setTimer(60);
         }
       }
     };
@@ -112,6 +37,11 @@ window.initGame = (React, assetsUrl) => {
       setBoard(Array(15).fill().map(() => Array(15).fill(0)));
       setCurrentPlayer(1);
       setWinner(0);
+      setTimer(60);
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        setTimerInterval(null);
+      }
     };
 
     return React.createElement(
@@ -142,7 +72,7 @@ window.initGame = (React, assetsUrl) => {
         'p',
         null,
         winner === 0
-          ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'}`
+          ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (Time left: ${timer}s)`
           : `Player ${winner} wins!`
       ),
       React.createElement(
