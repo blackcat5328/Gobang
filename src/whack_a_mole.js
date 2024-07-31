@@ -263,7 +263,8 @@ window.initGame = (React, assetsUrl) => {
         React.createElement(
           'ul',
           null,
-          moveRecords.slice(-5).map((record, index) => 
+          // Pad with empty spaces if fewer than 5 moves
+          [...moveRecords.slice(-5), ...Array(5 - moveRecords.length).fill('')].map((record, index) =>
             React.createElement('li', { key: index }, record)
           )
         )
