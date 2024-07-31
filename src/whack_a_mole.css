@@ -29,19 +29,15 @@ body {
   height: 30px;
   background-color: #eee;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative; /* Important: Allow absolute positioning of the image */
 }
 
 .cell.player1 {
-  background-image: url('${assetsUrl}/player1.png');
-  background-size: cover;
+  /* Remove background-image and background-size */
 }
 
 .cell.player2 {
-  background-image: url('${assetsUrl}/player2.png');
-  background-size: cover;
+  /* Remove background-image and background-size */
 }
 
 .game-board .cell .player-image {
