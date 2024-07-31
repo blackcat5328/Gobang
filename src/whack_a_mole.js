@@ -17,6 +17,7 @@ window.initGame = (React, assetsUrl) => {
     const [timer, setTimer] = useState(60);
     const [elapsedTime, setElapsedTime] = useState(0);
     const [moveRecords, setMoveRecords] = useState([]);
+    const [showHistory, setShowHistory] = useState(false);
 
     useEffect(() => {
       let interval;
@@ -172,6 +173,10 @@ window.initGame = (React, assetsUrl) => {
       setMoveRecords([]);
     };
 
+    const toggleHistory = () => {
+      setShowHistory(prev => !prev);
+    };
+
     return React.createElement(
       'div',
       { className: "gobang" },
@@ -232,12 +237,29 @@ window.initGame = (React, assetsUrl) => {
           'button',
           { onClick: handleReset },
           'Reset'
+        ),
+        React.createElement(
+          'button',
+          { onClick: toggleHistory },
+          showHistory ? 'Hide Steps' : 'Show Steps'
+        )
+      ),
+      showHistory && React.createElement(
+        'div',
+        { className: "move-history" },
+        React.createElement('h3', null, "Move History:"),
+        React.createElement(
+          'ul',
+          null,
+          moveRecords.map((record, index) => 
+            React.createElement('li', { key: index }, record)
+          )
         )
       ),
       React.createElement(
         'div',
         { className: "move-records" },
-        React.createElement('h3', null, "Move Records:"),
+        React.createElement('h3', null, "Recent Moves:"),
         React.createElement(
           'ul',
           null,
