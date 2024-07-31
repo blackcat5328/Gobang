@@ -219,12 +219,7 @@ window.initGame = (React, assetsUrl) => {
         'p',
         null,
         winner === 0
-          ? React.createElement('span', null, `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (${timer} seconds remaining)`),
-            React.createElement('img', {
-              src: currentPlayer === 1 ? `${assetsUrl}/player1.png` : `${assetsUrl}/player2.png`,
-              alt: `Player ${currentPlayer}`,
-              style: { width: '30px', height: '30px', marginLeft: '10px' } // Adjust size and margin as needed
-            })
+          ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (${timer} seconds remaining)`
           : `Player ${winner} wins!`
       ),
       React.createElement(
