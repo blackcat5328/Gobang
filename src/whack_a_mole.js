@@ -187,23 +187,6 @@ window.initGame = (React, assetsUrl) => {
       'div',
       { className: "gobang" },
       React.createElement('h2', null, "Gobang"),
-
-      // Display current player's image
-      React.createElement(
-        'div',
-        { className: "player-image" },
-        React.createElement(
-          'img',
-          {
-            src: currentPlayer === 1
-              ? `${assetsUrl}/player1.png`
-              : `${assetsUrl}/player2.png`,
-            alt: `Player ${currentPlayer}`,
-            className: 'player-image'
-          }
-        )
-      ),
-
       React.createElement(
         'div',
         { className: "game-board" },
@@ -217,16 +200,15 @@ window.initGame = (React, assetsUrl) => {
                 {
                   key: `${rowIndex}-${colIndex}`,
                   className: `cell ${cell === 1 ? 'player1' : cell === 2 ? 'player2' : ''}`,
+                  style: {
+                    backgroundImage: cell === 1
+                      ? `url(${assetsUrl}/player1.png)`
+                      : cell === 2
+                        ? `url(${assetsUrl}/player2.png)`
+                        : 'none'
+                  },
                   onClick: () => handleClick(rowIndex, colIndex)
-                },
-                cell !== 0 && // Only display image if a player is on the cell
-                React.createElement('img', {
-                  src: cell === 1
-                    ? `${assetsUrl}/player1.png`
-                    : `${assetsUrl}/player2.png`,
-                  alt: `Player ${cell}`,
-                  className: 'player-image' // Add a class for styling
-                })
+                }
               )
             )
           )
