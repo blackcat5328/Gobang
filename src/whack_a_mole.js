@@ -213,20 +213,6 @@ window.initGame = (React, assetsUrl) => {
           ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (${timer} seconds remaining)`
           : `Player ${winner} wins!`
       ),
-      
-      // Display move records
-      React.createElement(
-        'div',
-        { className: "move-records" },
-        React.createElement('h3', null, "Move Records:"),
-        React.createElement(
-          'ul',
-          null,
-          moveRecords.map((record, index) => 
-            React.createElement('li', { key: index }, record)
-          )
-        )
-      ),
 
       React.createElement(
         'div',
@@ -245,6 +231,20 @@ window.initGame = (React, assetsUrl) => {
           'button',
           { onClick: handleReset },
           'Reset'
+        )
+      ),
+
+      // Move Records section now at the bottom
+      React.createElement(
+        'div',
+        { className: "move-records" },
+        React.createElement('h3', null, "Move Records:"),
+        React.createElement(
+          'ul',
+          null,
+          moveRecords.map((record, index) => 
+            React.createElement('li', { key: index }, record)
+          )
         )
       )
     );
