@@ -1,51 +1,45 @@
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  background-color: #f0f0f0;
-  font-family: Arial, sans-serif;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+margin: 0;
+background-color: #f0f0f0;
+font-family: Arial, sans-serif;
 }
 
 .gobang {
-  text-align: center;
+text-align: center;
 }
 
 .game-board {
-  display: grid;
-  grid-template-columns: repeat(15, 1fr);
-  grid-gap: 1px;
-  margin-top: 20px;
-  background-color: #000;
+display: grid;
+grid-template-columns: repeat(15, 1fr);
+grid-gap: 1px;
+margin-top: 20px;
+background-color: #000;
 }
 
 .row {
-  display: contents;
+display: contents;
 }
 
 .cell {
-  width: 30px;
-  height: 30px;
-  background-color: #eee;
-  cursor: pointer;
-  position: relative; /* Important: Allow absolute positioning of the image */
+width: 30px;
+height: 30px;
+background-color: #eee;
+cursor: pointer;
+display: flex;
+justify-content: center;
+align-items: center;
 }
 
 .cell.player1 {
-  /* Remove background-image and background-size */
+background-image: url('${assetsUrl}/player1.png');
+background-size: cover;
 }
 
 .cell.player2 {
-  /* Remove background-image and background-size */
-}
-
-.game-board .cell .player-image {
-  /* Adjust image size as needed */
-  width: 30px; /* Example size */
-  height: 30px; /* Example size */
-  position: absolute; /* Position the image within the cell */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Center the image */
+background-image: url('${assetsUrl}/player2.png');
+background-size: cover;
 }
