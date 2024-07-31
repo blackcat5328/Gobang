@@ -4,7 +4,6 @@ window.initGame = (React, assetsUrl) => {
   const Gobang = ({ assetsUrl }) => {
     const [board, setBoard] = useState(() => {
       const initialBoard = Array(15).fill().map(() => Array(15).fill(0));
-      // Place initial chess pieces
       initialBoard[7][7] = 1;
       initialBoard[7][8] = 2;
       initialBoard[8][7] = 2;
@@ -16,12 +15,13 @@ window.initGame = (React, assetsUrl) => {
     const [currentPlayer, setCurrentPlayer] = useState(1);
     const [winner, setWinner] = useState(0);
     const [timer, setTimer] = useState(60);
+    const [moveRecords, setMoveRecords] = useState([]);
 
     useEffect(() => {
       let interval;
       if (winner === 0) {
         interval = setInterval(() => {
-          setTimer((prevTimer) => prevTimer - 1);
+          setTimer(prevTimer => prevTimer - 1);
         }, 1000);
       } else {
         clearInterval(interval);
@@ -42,9 +42,7 @@ window.initGame = (React, assetsUrl) => {
       for (let i = 0; i < 15; i++) {
         if (board[row][i] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -55,9 +53,7 @@ window.initGame = (React, assetsUrl) => {
       for (let i = 0; i < 15; i++) {
         if (board[i][col] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -69,9 +65,7 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c >= 0) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -82,9 +76,7 @@ window.initGame = (React, assetsUrl) => {
       while (r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -98,9 +90,7 @@ window.initGame = (React, assetsUrl) => {
       while (r < 15 && c >= 0) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -111,9 +101,7 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) {
-            return true;
-          }
+          if (count === 4) return true;
         } else {
           count = 0;
         }
@@ -126,7 +114,6 @@ window.initGame = (React, assetsUrl) => {
 
     const handleClick = (row, col) => {
       if (board[row][col] === 0 && winner === 0) {
-        // Check if there are any adjacent chess pieces
         if (
           (row > 0 && board[row - 1][col] !== 0) ||
           (row < 14 && board[row + 1][col] !== 0) ||
@@ -139,6 +126,9 @@ window.initGame = (React, assetsUrl) => {
 
           setHistory([...history.slice(0, currentIndex + 1), newBoard]);
           setCurrentIndex(currentIndex + 1);
+
+          // Add move record
+          setMoveRecords([...moveRecords, `Player ${currentPlayer}: (${row}, ${col})`]);
 
           if (checkWin(row, col, currentPlayer)) {
             setWinner(currentPlayer);
@@ -156,6 +146,7 @@ window.initGame = (React, assetsUrl) => {
         setBoard(history[currentIndex - 1]);
         setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
         setTimer(60);
+        setMoveRecords(moveRecords.slice(0, -1)); // Remove last move record
       }
     };
 
@@ -170,7 +161,6 @@ window.initGame = (React, assetsUrl) => {
 
     const handleReset = () => {
       const newBoard = Array(15).fill().map(() => Array(15).fill(0));
-      // Place initial chess pieces
       newBoard[7][7] = 1;
       newBoard[7][8] = 2;
       newBoard[8][7] = 2;
@@ -181,6 +171,7 @@ window.initGame = (React, assetsUrl) => {
       setCurrentPlayer(1);
       setWinner(0);
       setTimer(60);
+      setMoveRecords([]); // Reset move records
     };
 
     return React.createElement(
@@ -222,6 +213,21 @@ window.initGame = (React, assetsUrl) => {
           ? `Current player: ${currentPlayer === 1 ? 'Player 1' : 'Player 2'} (${timer} seconds remaining)`
           : `Player ${winner} wins!`
       ),
+      
+      // Display move records
+      React.createElement(
+        'div',
+        { className: "move-records" },
+        React.createElement('h3', null, "Move Records:"),
+        React.createElement(
+          'ul',
+          null,
+          moveRecords.map((record, index) => 
+            React.createElement('li', { key: index }, record)
+          )
+        )
+      ),
+
       React.createElement(
         'div',
         { className: "controls" },
