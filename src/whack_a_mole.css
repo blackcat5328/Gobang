@@ -43,3 +43,13 @@ body {
   background-image: url('${assetsUrl}/player2.png');
   background-size: cover;
 }
+
+.game-board .cell .player-image {
+  /* Adjust image size as needed */
+  width: 30px; /* Example size */
+  height: 30px; /* Example size */
+  position: absolute; /* Position the image within the cell */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the image */
+}
