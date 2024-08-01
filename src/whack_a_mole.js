@@ -196,34 +196,77 @@ window.initGame = (React, assetsUrl) => {
     };
 
    const findBestMove = () => {
-  // Implement your AI logic here!
-  // This function should analyze the board and return the best move
-  // as an array [row, col]
+    // Easy AI logic:
+    // 1. Prioritize placing pieces near existing pieces of the same color.
+    // 2. If no valid moves near existing pieces, place randomly.
 
-  // Using Minimax with Alpha-Beta Pruning
-  const bestMove = minimax(board, aiPlayer, 0, -Infinity, Infinity);
+    let bestMove = [-1, -1]; // Default to no move
+    let maxScore = -Infinity;
 
-  // Update the board directly here
-  if (bestMove[0] !== -1 && bestMove[1] !== -1) {
-    const newBoard = board.map(row => row.slice());
-    newBoard[bestMove[0]][bestMove[1]] = aiPlayer;
-    setBoard(newBoard);
+    for (let row = 0; row < 15; row++) {
+      for (let col = 0; col < 15; col++) {
+        if (board[row][col] === 0) {
+          // Calculate score based on proximity to existing pieces
+          let score = 0;
+          for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+              if (row + i >= 0 && row + i < 15 && col + j >= 0 && col + j < 15) {
+                if (board[row + i][col + j] === aiPlayer) {
+                  score += 2; // Higher score for closer pieces
+                }
+              }
+            }
+          }
 
-    setHistory([...history.slice(0, currentIndex + 1), newBoard]);
-    setCurrentIndex(currentIndex + 1);
-
-    setMoveRecords([...moveRecords, `Player ${aiPlayer}: (${bestMove[0]}, ${bestMove[1]})`]);
-
-    if (checkWin(bestMove[0], bestMove[1], aiPlayer)) {
-      setWinner(aiPlayer);
-    } else {
-      setCurrentPlayer(aiPlayer === 1 ? 2 : 1);
-      setTimer(60);
+          // Prioritize moves near existing pieces
+          if (score > maxScore) {
+            maxScore = score;
+            bestMove = [row, col];
+          } else if (score === maxScore && Math.random() < 0.5) {
+            // If multiple moves with the same score, choose randomly
+            bestMove = [row, col];
+          }
+        }
+      }
     }
-  }
 
-  return bestMove;
-};
+    // If no valid moves near existing pieces, place randomly
+    if (bestMove[0] === -1 && bestMove[1] === -1) {
+      let validMoves = [];
+      for (let row = 0; row < 15; row++) {
+        for (let col = 0; col < 15; col++) {
+          if (board[row][col] === 0) {
+            validMoves.push([row, col]);
+          }
+        }
+      }
+      if (validMoves.length > 0) {
+        const randomIndex = Math.floor(Math.random() * validMoves.length);
+        bestMove = validMoves[randomIndex];
+      }
+    }
+
+    // Update the board with the best move
+    if (bestMove[0] !== -1 && bestMove[1] !== -1) {
+      const newBoard = board.map(row => row.slice());
+      newBoard[bestMove[0]][bestMove[1]] = aiPlayer;
+      setBoard(newBoard);
+
+      setHistory([...history.slice(0, currentIndex + 1), newBoard]);
+      setCurrentIndex(currentIndex + 1);
+
+      setMoveRecords([...moveRecords, `Player ${aiPlayer}: (${bestMove[0]}, ${bestMove[1]})`]);
+
+      if (checkWin(bestMove[0], bestMove[1], aiPlayer)) {
+        setWinner(aiPlayer);
+      } else {
+        setCurrentPlayer(aiPlayer === 1 ? 2 : 1);
+        setTimer(60);
+      }
+    }
+
+    return bestMove;
+  };
 
 const minimax = (board, player, depth, alpha, beta) => {
   if (checkWin(board, player)) {
