@@ -260,25 +260,111 @@ window.initGame = (React, assetsUrl) => {
     };
 
     const evaluateBoard = (board) => {
-      // Implement your evaluation logic here!
-      // This function should return a score representing how favorable
-      // the board is for the AI player.
-
-      // Example: (This is a very basic implementation, you'll need a more
-      // sophisticated evaluation function)
       let score = 0;
+
+      // Check for potential threats and winning lines in all directions
+      const directions = [
+        [0, 1], // Right
+        [1, 0], // Down
+        [1, 1], // Diagonal (bottom-right)
+        [1, -1], // Diagonal (bottom-left)
+      ];
+
       for (let row = 0; row < 15; row++) {
         for (let col = 0; col < 15; col++) {
           if (board[row][col] === aiPlayer) {
-            score += 1; // Basic score for each AI piece
+            // Score for AI pieces
+            score += 1;
+
+            // Bonus for center piece
             if (row === 7 && col === 7) {
-              score += 2; // Bonus for center piece
+              score += 2;
+            }
+
+            // Check potential threats and winning lines
+            for (const [dr, dc] of directions) {
+              let count = 0;
+              let openEnds = 0;
+              let r = row, c = col;
+
+              // Count consecutive pieces in the direction
+              while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === aiPlayer) {
+                count++;
+                r += dr;
+                c += dc;
+              }
+
+              // Count open ends (empty cells at the ends of the line)
+              r = row - dr, c = col - dc;
+              while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+                openEnds++;
+                r -= dr;
+                c -= dc;
+              }
+              r = row + dr, c = col + dc;
+              while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+                openEnds++;
+                r += dr;
+                c += dc;
+              }
+
+              // Assign score based on the number of consecutive pieces and open ends
+              if (count === 3 && openEnds === 2) {
+                score += 10; // Strong threat (3 in a row with 2 open ends)
+              } else if (count === 2 && openEnds === 2) {
+                score += 5; // Moderate threat (2 in a row with 2 open ends)
+              } else if (count === 4 && openEnds === 1) {
+                score += 20; // Almost winning (4 in a row with 1 open end)
+              } else if (count === 4 && openEnds === 2) {
+                score += 50; // Winning move (4 in a row with 2 open ends)
+              }
             }
           } else if (board[row][col] !== 0) {
-            score -= 1; // Penalty for opponent's piece
+            // Penalty for opponent's piece
+            score -= 1;
+
+            // Check opponent's potential threats
+            for (const [dr, dc] of directions) {
+              let count = 0;
+              let openEnds = 0;
+              let r = row, c = col;
+
+              // Count consecutive pieces in the direction
+              while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === board[row][col]) {
+                count++;
+                r += dr;
+                c += dc;
+              }
+
+              // Count open ends
+              r = row - dr, c = col - dc;
+              while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+                openEnds++;
+                r -= dr;
+                c -= dc;
+              }
+              r = row + dr, c = col + dc;
+              while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+                openEnds++;
+                r += dr;
+                c += dc;
+              }
+
+              // Assign penalty based on the opponent's threat
+              if (count === 3 && openEnds === 2) {
+                score -= 15; // Strong opponent threat
+              } else if (count === 2 && openEnds === 2) {
+                score -= 8; // Moderate opponent threat
+              } else if (count === 4 && openEnds === 1) {
+                score -= 30; // Opponent almost winning
+              } else if (count === 4 && openEnds === 2) {
+                score -= 70; // Opponent winning
+              }
+            }
           }
         }
       }
+
       return score;
     };
 
