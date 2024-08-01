@@ -114,6 +114,52 @@ window.initGame = (React, assetsUrl) => {
         c++;
       }
 
+      // Check for consecutive pieces in all directions
+      const directions = [
+        [0, 1], // Right
+        [1, 0], // Down
+        [1, 1], // Diagonal (bottom-right)
+        [1, -1], // Diagonal (bottom-left)
+      ];
+
+      for (const [dr, dc] of directions) {
+        let count = 0;
+        let r = row, c = col;
+        while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === player) {
+          count++;
+          r += dr;
+          c += dc;
+        }
+        r = row - dr, c = col - dc;
+        while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === player) {
+          count++;
+          r -= dr;
+          c -= dc;
+        }
+        if (count >= 4) {
+          // Highlight consecutive pieces
+          r = row, c = col;
+          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === player) {
+            const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+            if (cell) {
+              cell.classList.add('winning-piece');
+            }
+            r += dr;
+            c += dc;
+          }
+          r = row - dr, c = col - dc;
+          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === player) {
+            const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+            if (cell) {
+              cell.classList.add('winning-piece');
+            }
+            r -= dr;
+            c -= dc;
+          }
+          return true;
+        }
+      }
+
       return false;
     };
 
@@ -321,7 +367,10 @@ window.initGame = (React, assetsUrl) => {
                         ? `url(${assetsUrl}/player2.png)`
                         : 'none'
                   },
-                  onClick: () => handleClick(rowIndex, colIndex)
+                  onClick: () => handleClick(rowIndex, colIndex),
+                  // Add data attributes for easy selection
+                  'data-row': rowIndex,
+                  'data-col': colIndex
                 }
               )
             )
