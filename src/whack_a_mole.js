@@ -19,7 +19,7 @@ window.initGame = (React, assetsUrl) => {
     const [moveRecords, setMoveRecords] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
     const [aiMode, setAiMode] = useState(0); // 0: Off, 1: On
-    const [aiPlayer, setAiPlayer] = useState(1); // AI player (Black or White)
+    const [aiPlayer, setAiPlayer] = useState(2); // AI player (Black or White)
 
     useEffect(() => {
       let interval;
@@ -458,7 +458,7 @@ const evaluateBoard = (board) => {
       setShowHistory(prev => !prev);
     };
 
-    const handleAiSwitch = () => {
+   const handleAiSwitch = () => {
       setAiMode(prevAiMode => (prevAiMode + 1) % 2); // Toggle AI mode
       if (aiMode === 1) {
         // Set AI player to the *opposite* of the current player
