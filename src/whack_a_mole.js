@@ -20,6 +20,7 @@ window.initGame = (React, assetsUrl) => {
     const [showHistory, setShowHistory] = useState(false);
     const [aiMode, setAiMode] = useState(0); // 0: Off, 1: On
     const [aiPlayer, setAiPlayer] = useState(1); // AI player (Black or White)
+    const [winningLine, setWinningLine] = useState([]); // New state for winning line
 
     useEffect(() => {
       let interval;
@@ -47,7 +48,10 @@ window.initGame = (React, assetsUrl) => {
       for (let i = 0; i < 15; i++) {
         if (row >= 0 && row < 15 && board[row][i] === player) {
           count++;
-          if (count === 4) return true;
+          if (count === 4) {
+            // Store winning line coordinates
+            return [[row, i], [row, i - 1], [row, i - 2], [row, i - 3], [row, i - 4]]; 
+          }
         } else {
           count = 0;
         }
@@ -58,7 +62,10 @@ window.initGame = (React, assetsUrl) => {
       for (let i = 0; i < 15; i++) {
         if (col >= 0 && col < 15 && board[i][col] === player) {
           count++;
-          if (count === 4) return true;
+          if (count === 4) {
+            // Store winning line coordinates
+            return [[i, col], [i - 1, col], [i - 2, col], [i - 3, col], [i - 4, col]]; 
+          }
         } else {
           count = 0;
         }
@@ -70,7 +77,10 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c >= 0 && r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) return true;
+          if (count === 4) {
+            // Store winning line coordinates
+            return [[r, c], [r + 1, c + 1], [r + 2, c + 2], [r + 3, c + 3], [r + 4, c + 4]]; 
+          }
         } else {
           count = 0;
         }
@@ -81,7 +91,10 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c >= 0 && r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) return true;
+          if (count === 4) {
+            // Store winning line coordinates
+            return [[r, c], [r - 1, c - 1], [r - 2, c - 2], [r - 3, c - 3], [r - 4, c - 4]]; 
+          }
         } else {
           count = 0;
         }
@@ -95,7 +108,10 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c >= 0 && r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) return true;
+          if (count === 4) {
+            // Store winning line coordinates
+            return [[r, c], [r - 1, c + 1], [r - 2, c + 2], [r - 3, c + 3], [r - 4, c + 4]]; 
+          }
         } else {
           count = 0;
         }
@@ -106,7 +122,10 @@ window.initGame = (React, assetsUrl) => {
       while (r >= 0 && c >= 0 && r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
-          if (count === 4) return true;
+          if (count === 4) {
+            // Store winning line coordinates
+            return [[r, c], [r + 1, c - 1], [r + 2, c - 2], [r + 3, c - 3], [r + 4, c - 4]]; 
+          }
         } else {
           count = 0;
         }
@@ -136,6 +155,7 @@ window.initGame = (React, assetsUrl) => {
 
           if (checkWin(row, col, currentPlayer)) {
             setWinner(currentPlayer);
+            setWinningLine(checkWin(row, col, currentPlayer)); // Store winning line
           } else {
             // Handle AI turn if AI mode is enabled
             if (aiMode === 1 && currentPlayer === aiPlayer) {
@@ -185,6 +205,7 @@ window.initGame = (React, assetsUrl) => {
 
         if (checkWin(bestMove[0], bestMove[1], aiPlayer)) {
           setWinner(aiPlayer);
+          setWinningLine(checkWin(bestMove[0], bestMove[1], aiPlayer)); // Store winning line
         } else {
           setCurrentPlayer(aiPlayer === 1 ? 2 : 1);
           setTimer(60);
@@ -253,6 +274,7 @@ window.initGame = (React, assetsUrl) => {
         setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
         setTimer(60);
         setMoveRecords(moveRecords.slice(0, -1));
+        setWinningLine([]); // Clear winning line when undoing
       }
     };
 
@@ -262,6 +284,7 @@ window.initGame = (React, assetsUrl) => {
         setBoard(history[currentIndex + 1]);
         setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
         setTimer(60);
+        setWinningLine([]); // Clear winning line when redoing
       }
     };
 
@@ -279,6 +302,7 @@ window.initGame = (React, assetsUrl) => {
       setTimer(60);
       setElapsedTime(0);
       setMoveRecords([]);
+      setWinningLine([]); // Clear winning line when resetting
     };
 
     const toggleHistory = () => {
@@ -326,6 +350,21 @@ window.initGame = (React, assetsUrl) => {
               )
             )
           )
+        )
+      ),
+      // Render winning line
+      winningLine.length > 0 && React.createElement(
+        'div',
+        { className: 'winning-line' },
+        winningLine.map((point, index) =>
+          React.createElement('div', {
+            key: index,
+            className: 'winning-point',
+            style: {
+              left: `${point[1] * 40}px`, // Assuming cell size is 40px
+              top: `${point[0] * 40}px`
+            }
+          })
         )
       ),
       React.createElement(
@@ -396,4 +435,4 @@ window.initGame = (React, assetsUrl) => {
   return () => React.createElement(Gobang, { assetsUrl: assetsUrl });
 };
 
-console.log('Gobang game script loaded');
+console.
