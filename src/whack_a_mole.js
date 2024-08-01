@@ -435,4 +435,4 @@ window.initGame = (React, assetsUrl) => {
   return () => React.createElement(Gobang, { assetsUrl: assetsUrl });
 };
 
-console.
+console.log('Gobang game script loaded');
