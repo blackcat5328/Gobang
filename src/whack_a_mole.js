@@ -334,11 +334,12 @@ window.initGame = (React, assetsUrl) => {
     const handleAiSwitch = () => {
       setAiMode(prevAiMode => (prevAiMode + 1) % 2); // Toggle AI mode
       if (aiMode === 1) { 
+        // Set AI player to the *opposite* of the current player
         setAiPlayer(currentPlayer === 1 ? 2 : 1); 
       }
     };
 
-    // Trigger AI move when currentPlayer changes to AI
+    // Trigger AI move only when it's the AI's turn
     useEffect(() => {
       if (aiMode === 1 && currentPlayer === aiPlayer) {
         findBestMove();
@@ -450,6 +451,3 @@ window.initGame = (React, assetsUrl) => {
   };
 
   return () => React.createElement(Gobang, { assetsUrl: assetsUrl });
-};
-
-console.log('Gobang game script loaded');
