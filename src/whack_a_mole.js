@@ -19,7 +19,7 @@ window.initGame = (React, assetsUrl) => {
     const [moveRecords, setMoveRecords] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
     const [aiMode, setAiMode] = useState(0); // 0: Off, 1: On
-    const [aiPlayer, setAiPlayer] = useState(1); // AI player (Black or White)
+    const [aiPlayer, setAiPlayer] = useState(0); // AI player (Black or White)
 
     useEffect(() => {
       let interval;
@@ -336,6 +336,9 @@ window.initGame = (React, assetsUrl) => {
       if (aiMode === 1) {
         // Set AI player to the *opposite* of the current player
         setAiPlayer(currentPlayer === 1 ? 2 : 1);
+      } else {
+        // Reset AI player when AI mode is turned off
+        setAiPlayer(0); 
       }
     };
 
@@ -452,3 +455,5 @@ window.initGame = (React, assetsUrl) => {
 
   return () => React.createElement(Gobang, { assetsUrl: assetsUrl });
 };
+
+console.log('Gobang game script loaded');
