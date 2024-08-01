@@ -43,3 +43,19 @@ background-size: cover;
 background-image: url('${assetsUrl}/player2.png');
 background-size: cover;
 }
+
+.winning-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 600px; /* Adjust width based on board size */
+  height: 600px; /* Adjust height based on board size */
+  pointer-events: none; /* Prevent line from interfering with clicks */
+}
+
+.winning-point {
+  position: absolute;
+  width: 5px; /* Adjust line width */
+  height: 100%;
+  background-color: red; /* Adjust line color */
+}
