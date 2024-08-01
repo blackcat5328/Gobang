@@ -18,6 +18,8 @@ window.initGame = (React, assetsUrl) => {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [moveRecords, setMoveRecords] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
+    const [aiMode, setAiMode] = useState(0); // 0: Off, 1: On
+    const [aiPlayer, setAiPlayer] = useState(1); // AI player (Black or White)
 
     useEffect(() => {
       let interval;
@@ -131,11 +133,96 @@ window.initGame = (React, assetsUrl) => {
           if (checkWin(row, col, currentPlayer)) {
             setWinner(currentPlayer);
           } else {
-            setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
-            setTimer(60);
+            // Handle AI turn if AI mode is enabled
+            if (aiMode === 1 && currentPlayer === aiPlayer) {
+              const bestMove = findBestMove();
+              const [aiRow, aiCol] = bestMove;
+              handleClick(aiRow, aiCol); // Make the AI's move
+            } else {
+              setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+              setTimer(60);
+            }
           }
         }
       }
+    };
+
+    const findBestMove = () => {
+      let bestMove = [-1, -1]; // Default move
+      let bestScore = -Infinity;
+
+      for (let row = 0; row < 15; row++) {
+        for (let col = 0; col < 15; col++) {
+          if (board[row][col] === 0) {
+            // Make the move
+            const newBoard = board.map(r => r.slice());
+            newBoard[row][col] = aiPlayer;
+
+            // Recursively evaluate the move
+            const score = minimax(newBoard, aiPlayer === 1 ? 2 : 1, 0, -Infinity, Infinity);
+
+            // Choose the move with the highest score
+            if (score > bestScore) {
+              bestScore = score;
+              bestMove = [row, col];
+            }
+          }
+        }
+      }
+
+      return bestMove;
+    };
+
+    const minimax = (board, player, depth, alpha, beta) => {
+      if (checkWin(board, player)) {
+        return player === aiPlayer ? Infinity : -Infinity;
+      } else if (depth === 5) { // Adjust depth for performance
+        return evaluateBoard(board);
+      }
+
+      let bestScore = player === aiPlayer ? -Infinity : Infinity;
+      for (let row = 0; row < 15; row++) {
+        for (let col = 0; col < 15; col++) {
+          if (board[row][col] === 0) {
+            const newBoard = board.map(r => r.slice());
+            newBoard[row][col] = player;
+
+            const score = minimax(newBoard, player === 1 ? 2 : 1, depth + 1, alpha, beta);
+
+            if (player === aiPlayer) {
+              bestScore = Math.max(bestScore, score);
+              alpha = Math.max(alpha, bestScore);
+            } else {
+              bestScore = Math.min(bestScore, score);
+              beta = Math.min(beta, bestScore);
+            }
+
+            if (beta <= alpha) {
+              return bestScore; // Alpha-beta pruning
+            }
+          }
+        }
+      }
+
+      return bestScore;
+    };
+
+    const evaluateBoard = (board) => {
+      // Simple evaluation function:
+      let score = 0;
+      for (let row = 0; row < 15; row++) {
+        for (let col = 0; col < 15; col++) {
+          if (board[row][col] === aiPlayer) {
+            score += 1; // Basic score for each AI piece
+            if (row === 7 && col === 7) {
+              score += 2; // Bonus for center piece
+            }
+          } else if (board[row][col] !== 0) {
+            score -= 1; // Penalty for opponent's piece
+          }
+        }
+      }
+      return score;
     };
 
     const handleUndo = () => {
@@ -175,6 +262,13 @@ window.initGame = (React, assetsUrl) => {
 
     const toggleHistory = () => {
       setShowHistory(prev => !prev);
+    };
+
+    const handleAiSwitch = () => {
+      setAiMode(prevAiMode => (prevAiMode + 1) % 2); // Toggle AI mode
+      if (aiMode === 1) {
+        setAiPlayer(currentPlayer); // Set AI player to current player
+      }
     };
 
     return React.createElement(
@@ -242,6 +336,11 @@ window.initGame = (React, assetsUrl) => {
           'button',
           { onClick: toggleHistory },
           showHistory ? 'Hide Steps' : 'Show All Steps'
+        ),
+        React.createElement(
+          'button',
+          { onClick: handleAiSwitch },
+          `AI Mode: ${aiMode === 0 ? 'Off' : `On (Player ${aiPlayer})`}`
         )
       ),
       showHistory && React.createElement(
