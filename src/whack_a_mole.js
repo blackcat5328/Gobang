@@ -317,6 +317,10 @@ window.initGame = (React, assetsUrl) => {
                 score += 20; // Almost winning (4 in a row with 1 open end)
               } else if (count === 4 && openEnds === 2) {
                 score += 50; // Winning move (4 in a row with 2 open ends)
+              } else if (count === 2 && openEnds === 1) {
+                score += 2; // Small threat (2 in a row with 1 open end)
+              } else if (count === 3 && openEnds === 1) {
+                score += 7; // Medium threat (3 in a row with 1 open end)
               }
             }
           } else if (board[row][col] !== 0) {
@@ -359,6 +363,10 @@ window.initGame = (React, assetsUrl) => {
                 score -= 30; // Opponent almost winning
               } else if (count === 4 && openEnds === 2) {
                 score -= 70; // Opponent winning
+              } else if (count === 2 && openEnds === 1) {
+                score -= 3; // Small opponent threat
+              } else if (count === 3 && openEnds === 1) {
+                score -= 10; // Medium opponent threat
               }
             }
           }
