@@ -200,30 +200,8 @@ window.initGame = (React, assetsUrl) => {
       // This function should analyze the board and return the best move
       // as an array [row, col]
 
-      // Example: (This is a very basic implementation, you'll need a more
-      // sophisticated algorithm for a better AI)
-      let bestMove = [-1, -1]; // Default move
-      let bestScore = -Infinity;
-
-      for (let row = 0; row < 15; row++) {
-        for (let col = 0; col < 15; col++) {
-          if (board[row][col] === 0) {
-            // Make the move
-            const newBoard = board.map(r => r.slice());
-            newBoard[row][col] = aiPlayer;
-
-            // Evaluate the move (you'll need to implement a better evaluation
-            // function)
-            const score = evaluateBoard(newBoard);
-
-            // Choose the move with the highest score
-            if (score > bestScore) {
-              bestScore = score;
-              bestMove = [row, col];
-            }
-          }
-        }
-      }
+      // Using Minimax with Alpha-Beta Pruning
+      const bestMove = minimax(board, aiPlayer, 0, -Infinity, Infinity);
 
       // Update the board directly here
       if (bestMove[0] !== -1 && bestMove[1] !== -1) {
