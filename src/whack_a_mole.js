@@ -287,8 +287,8 @@ window.initGame = (React, assetsUrl) => {
 
     const handleAiSwitch = () => {
       setAiMode(prevAiMode => (prevAiMode + 1) % 2); // Toggle AI mode
-      if (aiMode === 1) {
-        setAiPlayer(currentPlayer); // Set AI player to current player
+      if (aiMode === 1) { 
+        setAiPlayer(currentPlayer === 1 ? 2 : 1); 
       }
     };
 
