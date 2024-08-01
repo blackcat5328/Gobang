@@ -43,8 +43,9 @@ window.initGame = (React, assetsUrl) => {
 
     const checkWin = (row, col, player) => {
       let count = 0;
+      // Check rows
       for (let i = 0; i < 15; i++) {
-        if (board[row][i] === player) {
+        if (row >= 0 && row < 15 && board[row][i] === player) {
           count++;
           if (count === 4) return true;
         } else {
@@ -52,9 +53,10 @@ window.initGame = (React, assetsUrl) => {
         }
       }
 
+      // Check columns
       count = 0;
       for (let i = 0; i < 15; i++) {
-        if (board[i][col] === player) {
+        if (col >= 0 && col < 15 && board[i][col] === player) {
           count++;
           if (count === 4) return true;
         } else {
@@ -62,9 +64,10 @@ window.initGame = (React, assetsUrl) => {
         }
       }
 
+      // Check diagonal (top-left to bottom-right)
       count = 0;
       let r = row, c = col;
-      while (r >= 0 && c >= 0) {
+      while (r >= 0 && c >= 0 && r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
           if (count === 4) return true;
@@ -75,7 +78,7 @@ window.initGame = (React, assetsUrl) => {
         c--;
       }
       r = row + 1, c = col + 1;
-      while (r < 15 && c < 15) {
+      while (r >= 0 && c >= 0 && r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
           if (count === 4) return true;
@@ -86,9 +89,10 @@ window.initGame = (React, assetsUrl) => {
         c++;
       }
 
+      // Check diagonal (bottom-left to top-right)
       count = 0;
       r = row, c = col;
-      while (r < 15 && c >= 0) {
+      while (r >= 0 && c >= 0 && r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
           if (count === 4) return true;
@@ -99,7 +103,7 @@ window.initGame = (React, assetsUrl) => {
         c--;
       }
       r = row - 1, c = col + 1;
-      while (r >= 0 && c < 15) {
+      while (r >= 0 && c >= 0 && r < 15 && c < 15) {
         if (board[r][c] === player) {
           count++;
           if (count === 4) return true;
