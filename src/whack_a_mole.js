@@ -338,6 +338,13 @@ window.initGame = (React, assetsUrl) => {
       }
     };
 
+    // Trigger AI move when currentPlayer changes to AI
+    useEffect(() => {
+      if (aiMode === 1 && currentPlayer === aiPlayer) {
+        findBestMove();
+      }
+    }, [currentPlayer, aiMode, aiPlayer]);
+
     return React.createElement(
       'div',
       { className: "gobang" },
