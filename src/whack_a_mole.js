@@ -21,7 +21,7 @@ window.initGame = (React, assetsUrl) => {
     const [aiMode, setAiMode] = useState(0); // 0: Off, 1: On
     const [aiPlayer, setAiPlayer] = useState(1); // AI player (Black or White)
 
-        useEffect(() => {
+    useEffect(() => {
       let interval;
       if (winner === 0) {
         interval = setInterval(() => {
@@ -574,6 +574,7 @@ const evaluateBoard = (board) => {
         )
     )
   )
+);
 };
 
 return () => React.createElement(Gobang, { assetsUrl: assetsUrl });
