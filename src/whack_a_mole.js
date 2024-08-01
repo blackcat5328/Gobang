@@ -405,6 +405,52 @@ const evaluateBoard = (board) => {
           } else if (count === 3 && openEnds === 2) {
             score -= 100; // Strong opponent threat
           } else if (count === 3 && openEnds === 1) {
+            score += 50; // Medium threat (3 in a row with 1 open end)
+          } else if (count === 2 && openEnds === 2) {
+            score += 10; // Moderate threat (2 in a row with 2 open ends)
+          } else if (count === 2 && openEnds === 1) {
+            score += 5; // Small threat (2 in a row with 1 open end)
+          }
+        }
+      } else if (board[row][col] !== 0) {
+        // Penalty for opponent's piece
+        score -= 1;
+
+        // Check opponent's potential threats
+        for (const [dr, dc] of directions) {
+          let count = 0;
+          let openEnds = 0;
+          let r = row, c = col;
+
+          // Count consecutive pieces in the direction
+          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === board[row][col]) {
+            count++;
+            r += dr;
+            c += dc;
+          }
+
+          // Count open ends
+          r = row - dr, c = col - dc;
+          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+            openEnds++;
+            r -= dr;
+            c -= dc;
+          }
+          r = row + dr, c = col + dc;
+          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+            openEnds++;
+            r += dr;
+            c += dc;
+          }
+
+          // Assign penalty based on the opponent's threat
+          if (count === 4 && openEnds === 2) {
+            score -= 1000; // Opponent winning
+          } else if (count === 4 && openEnds === 1) {
+            score -= 500; // Opponent almost winning
+          } else if (count === 3 && openEnds === 2) {
+            score -= 100; // Strong opponent threat
+          } else if (count === 3 && openEnds === 1) {
             score -= 50; // Medium opponent threat
           } else if (count === 2 && openEnds === 2) {
             score -= 10; // Moderate opponent threat
