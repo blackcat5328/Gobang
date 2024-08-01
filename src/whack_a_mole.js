@@ -135,9 +135,7 @@ window.initGame = (React, assetsUrl) => {
           } else {
             // Handle AI turn if AI mode is enabled
             if (aiMode === 1 && currentPlayer === aiPlayer) {
-              const bestMove = findBestMove();
-              const [aiRow, aiCol] = bestMove;
-              handleClick(aiRow, aiCol); // Make the AI's move
+              findBestMove(); // Make the AI's move
             } else {
               setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
               setTimer(60);
@@ -167,6 +165,25 @@ window.initGame = (React, assetsUrl) => {
               bestMove = [row, col];
             }
           }
+        }
+      }
+
+      // Update the board directly here
+      if (bestMove[0] !== -1 && bestMove[1] !== -1) {
+        const newBoard = board.map(row => row.slice());
+        newBoard[bestMove[0]][bestMove[1]] = aiPlayer;
+        setBoard(newBoard);
+
+        setHistory([...history.slice(0, currentIndex + 1), newBoard]);
+        setCurrentIndex(currentIndex + 1);
+
+        setMoveRecords([...moveRecords, `Player ${aiPlayer}: (${bestMove[0]}, ${bestMove[1]})`]);
+
+        if (checkWin(bestMove[0], bestMove[1], aiPlayer)) {
+          setWinner(aiPlayer);
+        } else {
+          setCurrentPlayer(aiPlayer === 1 ? 2 : 1);
+          setTimer(60);
         }
       }
 
