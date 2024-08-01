@@ -21,6 +21,111 @@ window.initGame = (React, assetsUrl) => {
     const [aiMode, setAiMode] = useState(0); // 0: Off, 1: On
     const [aiPlayer, setAiPlayer] = useState(1); // AI player (Black or White)
 
+    const handleClick = (row, col) => {
+      if (board[row][col] === 0 && winner === 0) {
+        if (
+          (row > 0 && board[row - 1][col] !== 0) ||
+          (row < 14 && board[row + 1][col] !== 0) ||
+          (col > 0 && board[row][col - 1] !== 0) ||
+          (col < 14 && board[row][col + 1] !== 0)
+        ) {
+          const newBoard = board.map(row => row.slice());
+          newBoard[row][col] = currentPlayer;
+          setBoard(newBoard);
+
+          setHistory([...history.slice(0, currentIndex + 1), newBoard]);
+          setCurrentIndex(currentIndex + 1);
+
+          setMoveRecords([...moveRecords, `Player ${currentPlayer}: (${row}, ${col})`]);
+
+          if (checkWin(row, col, currentPlayer)) {
+            setWinner(currentPlayer);
+          } else {
+            // Handle AI turn if AI mode is enabled
+            if (aiMode === 1 && currentPlayer === aiPlayer) {
+              findBestMove(); // Make the AI's move
+            } else {
+              setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+              setTimer(60);
+            }
+          }
+        }
+      }
+    };
+
+    const findBestMove = () => {
+      // Easy AI logic:
+      // 1. Prioritize placing pieces near existing pieces of the same color.
+      // 2. If no valid moves near existing pieces, place randomly.
+
+      let bestMove = [-1, -1]; // Default to no move
+      let maxScore = -Infinity;
+
+      for (let row = 0; row < 15; row++) {
+        for (let col = 0; col < 15; col++) {
+          if (board[row][col] === 0) {
+            // Calculate score based on proximity to existing pieces
+            let score = 0;
+            for (let i = -1; i <= 1; i++) {
+              for (let j = -1; j <= 1; j++) {
+                if (row + i >= 0 && row + i < 15 && col + j >= 0 && col + j < 15) {
+                  if (board[row + i][col + j] === aiPlayer) {
+                    score += 2; // Higher score for closer pieces
+                  }
+                }
+              }
+            }
+
+            // Prioritize moves near existing pieces
+            if (score > maxScore) {
+              maxScore = score;
+              bestMove = [row, col];
+            } else if (score === maxScore && Math.random() < 0.5) {
+              // If multiple moves with the same score, choose randomly
+              bestMove = [row, col];
+            }
+          }
+        }
+      }
+
+      // If no valid moves near existing pieces, place randomly
+      if (bestMove[0] === -1 && bestMove[1] === -1) {
+        let validMoves = [];
+        for (let row = 0; row < 15; row++) {
+          for (let col = 0; col < 15; col++) {
+            if (board[row][col] === 0) {
+              validMoves.push([row, col]);
+            }
+          }
+        }
+        if (validMoves.length > 0) {
+          const randomIndex = Math.floor(Math.random() * validMoves.length);
+          bestMove = validMoves[randomIndex];
+        }
+      }
+
+      // Update the board with the best move
+      if (bestMove[0] !== -1 && bestMove[1] !== -1) {
+        const newBoard = board.map(row => row.slice());
+        newBoard[bestMove[0]][bestMove[1]] = aiPlayer;
+        setBoard(newBoard);
+
+        setHistory([...history.slice(0, currentIndex + 1), newBoard]);
+        setCurrentIndex(currentIndex + 1);
+
+        setMoveRecords([...moveRecords, `Player ${aiPlayer}: (${bestMove[0]}, ${bestMove[1]})`]);
+
+        if (checkWin(bestMove[0], bestMove[1], aiPlayer)) {
+          setWinner(aiPlayer);
+        } else {
+          setCurrentPlayer(aiPlayer === 1 ? 2 : 1);
+          setTimer(60);
+        }
+      }
+
+      return bestMove;
+    };
+
     useEffect(() => {
       let interval;
       if (winner === 0) {
@@ -162,308 +267,6 @@ window.initGame = (React, assetsUrl) => {
 
       return false;
     };
-
-    const handleClick = (row, col) => {
-      if (board[row][col] === 0 && winner === 0) {
-        if (
-          (row > 0 && board[row - 1][col] !== 0) ||
-          (row < 14 && board[row + 1][col] !== 0) ||
-          (col > 0 && board[row][col - 1] !== 0) ||
-          (col < 14 && board[row][col + 1] !== 0)
-        ) {
-          const newBoard = board.map(row => row.slice());
-          newBoard[row][col] = currentPlayer;
-          setBoard(newBoard);
-
-          setHistory([...history.slice(0, currentIndex + 1), newBoard]);
-          setCurrentIndex(currentIndex + 1);
-
-          setMoveRecords([...moveRecords, `Player ${currentPlayer}: (${row}, ${col})`]);
-
-          if (checkWin(row, col, currentPlayer)) {
-            setWinner(currentPlayer);
-          } else {
-            // Handle AI turn if AI mode is enabled
-            if (aiMode === 1 && currentPlayer === aiPlayer) {
-              findBestMove(); // Make the AI's move
-            } else {
-              setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
-              setTimer(60);
-            }
-          }
-        }
-      }
-    };
-
-   const findBestMove = () => {
-    // Easy AI logic:
-    // 1. Prioritize placing pieces near existing pieces of the same color.
-    // 2. If no valid moves near existing pieces, place randomly.
-
-    let bestMove = [-1, -1]; // Default to no move
-    let maxScore = -Infinity;
-
-    for (let row = 0; row < 15; row++) {
-      for (let col = 0; col < 15; col++) {
-        if (board[row][col] === 0) {
-          // Calculate score based on proximity to existing pieces
-          let score = 0;
-          for (let i = -1; i <= 1; i++) {
-            for (let j = -1; j <= 1; j++) {
-              if (row + i >= 0 && row + i < 15 && col + j >= 0 && col + j < 15) {
-                if (board[row + i][col + j] === aiPlayer) {
-                  score += 2; // Higher score for closer pieces
-                }
-              }
-            }
-          }
-
-          // Prioritize moves near existing pieces
-          if (score > maxScore) {
-            maxScore = score;
-            bestMove = [row, col];
-          } else if (score === maxScore && Math.random() < 0.5) {
-            // If multiple moves with the same score, choose randomly
-            bestMove = [row, col];
-          }
-        }
-      }
-    }
-
-    // If no valid moves near existing pieces, place randomly
-    if (bestMove[0] === -1 && bestMove[1] === -1) {
-      let validMoves = [];
-      for (let row = 0; row < 15; row++) {
-        for (let col = 0; col < 15; col++) {
-          if (board[row][col] === 0) {
-            validMoves.push([row, col]);
-          }
-        }
-      }
-      if (validMoves.length > 0) {
-        const randomIndex = Math.floor(Math.random() * validMoves.length);
-        bestMove = validMoves[randomIndex];
-      }
-    }
-
-    // Update the board with the best move
-    if (bestMove[0] !== -1 && bestMove[1] !== -1) {
-      const newBoard = board.map(row => row.slice());
-      newBoard[bestMove[0]][bestMove[1]] = aiPlayer;
-      setBoard(newBoard);
-
-      setHistory([...history.slice(0, currentIndex + 1), newBoard]);
-      setCurrentIndex(currentIndex + 1);
-
-      setMoveRecords([...moveRecords, `Player ${aiPlayer}: (${bestMove[0]}, ${bestMove[1]})`]);
-
-      if (checkWin(bestMove[0], bestMove[1], aiPlayer)) {
-        setWinner(aiPlayer);
-      } else {
-        setCurrentPlayer(aiPlayer === 1 ? 2 : 1);
-        setTimer(60);
-      }
-    }
-
-    return bestMove;
-  };
-
-const minimax = (board, player, depth, alpha, beta) => {
-  if (checkWin(board, player)) {
-    return player === aiPlayer ? Infinity : -Infinity;
-  } else if (depth === 5) { // Adjust depth for performance
-    return evaluateBoard(board);
-  }
-
-  let bestScore = player === aiPlayer ? -Infinity : Infinity;
-  for (let row = 0; row < 15; row++) {
-    for (let col = 0; col < 15; col++) {
-      if (board[row][col] === 0) {
-        const newBoard = board.map(r => r.slice());
-        newBoard[row][col] = player;
-
-        const score = minimax(newBoard, player === 1 ? 2 : 1, depth + 1, alpha, beta);
-
-        if (player === aiPlayer) {
-          bestScore = Math.max(bestScore, score);
-          alpha = Math.max(alpha, bestScore);
-        } else {
-          bestScore = Math.min(bestScore, score);
-          beta = Math.min(beta, bestScore);
-        }
-
-        if (beta <= alpha) {
-          return bestScore; // Alpha-beta pruning
-        }
-      }
-    }
-  }
-
-  return bestScore;
-};
-
-const evaluateBoard = (board) => {
-  let score = 0;
-
-  // Check for potential threats and winning lines in all directions
-  const directions = [
-    [0, 1], // Right
-    [1, 0], // Down
-    [1, 1], // Diagonal (bottom-right)
-    [1, -1], // Diagonal (bottom-left)
-  ];
-
-  for (let row = 0; row < 15; row++) {
-    for (let col = 0; col < 15; col++) {
-      if (board[row][col] === aiPlayer) {
-        // Score for AI pieces
-        score += 1;
-
-        // Bonus for center piece
-        if (row === 7 && col === 7) {
-          score += 2;
-        }
-
-        // Check potential threats and winning lines
-        for (const [dr, dc] of directions) {
-          let count = 0;
-          let openEnds = 0;
-          let r = row, c = col;
-
-          // Count consecutive pieces in the direction
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === aiPlayer) {
-            count++;
-            r += dr;
-            c += dc;
-          }
-
-          // Count open ends (empty cells at the ends of the line)
-          r = row - dr, c = col - dc;
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
-            openEnds++;
-            r -= dr;
-            c -= dc;
-          }
-          r = row + dr, c = col + dc;
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
-            openEnds++;
-            r += dr;
-            c += dc;
-          }
-
-          // Assign score based on the number of consecutive pieces and open ends
-          if (count === 4 && openEnds === 2) {
-            score += 1000; // Winning move (4 in a row with 2 open ends)
-          } else if (count === 4 && openEnds === 1) {
-            score += 500; // Almost winning (4 in a row with 1 open end)
-          } else if (count === 3 && openEnds === 2) {
-            score += 100; // Strong threat (3 in a row with 2 open ends)
-          } else if (count === 3 && openEnds === 1) {
-            score += 50; // Medium threat (3 in a row with 1 open end)
-          } else if (count === 2 && openEnds === 2) {
-            score += 10; // Moderate threat (2 in a row with 2 open ends)
-          } else if (count === 2 && openEnds === 1) {
-            score += 5; // Small threat (2 in a row with 1 open end)
-          }
-        }
-      } else if (board[row][col] !== 0) {
-        // Penalty for opponent's piece
-        score -= 1;
-
-        // Check opponent's potential threats
-        for (const [dr, dc] of directions) {
-          let count = 0;
-          let openEnds = 0;
-          let r = row, c = col;
-
-          // Count consecutive pieces in the direction
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === board[row][col]) {
-            count++;
-            r += dr;
-            c += dc;
-          }
-
-          // Count open ends
-          r = row - dr, c = col - dc;
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
-            openEnds++;
-            r -= dr;
-            c -= dc;
-          }
-          r = row + dr, c = col + dc;
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
-            openEnds++;
-            r += dr;
-            c += dc;
-          }
-
-          // Assign penalty based on the opponent's threat
-          if (count === 4 && openEnds === 2) {
-            score -= 1000; // Opponent winning
-          } else if (count === 4 && openEnds === 1) {
-            score -= 500; // Opponent almost winning
-          } else if (count === 3 && openEnds === 2) {
-            score -= 100; // Strong opponent threat
-          } else if (count === 3 && openEnds === 1) {
-            score += 50; // Medium threat (3 in a row with 1 open end)
-          } else if (count === 2 && openEnds === 2) {
-            score += 10; // Moderate threat (2 in a row with 2 open ends)
-          } else if (count === 2 && openEnds === 1) {
-            score += 5; // Small threat (2 in a row with 1 open end)
-          }
-        }
-      } else if (board[row][col] !== 0) {
-        // Penalty for opponent's piece
-        score -= 1;
-
-        // Check opponent's potential threats
-        for (const [dr, dc] of directions) {
-          let count = 0;
-          let openEnds = 0;
-          let r = row, c = col;
-
-          // Count consecutive pieces in the direction
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === board[row][col]) {
-            count++;
-            r += dr;
-            c += dc;
-          }
-
-          // Count open ends
-          r = row - dr, c = col - dc;
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
-            openEnds++;
-            r -= dr;
-            c -= dc;
-          }
-          r = row + dr, c = col + dc;
-          while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
-            openEnds++;
-            r += dr;
-            c += dc;
-          }
-
-          // Assign penalty based on the opponent's threat
-          if (count === 4 && openEnds === 2) {
-            score -= 1000; // Opponent winning
-          } else if (count === 4 && openEnds === 1) {
-            score -= 500; // Opponent almost winning
-          } else if (count === 3 && openEnds === 2) {
-            score -= 100; // Strong opponent threat
-          } else if (count === 3 && openEnds === 1) {
-            score -= 50; // Medium opponent threat
-          } else if (count === 2 && openEnds === 2) {
-            score -= 10; // Moderate opponent threat
-          } else if (count === 2 && openEnds === 1) {
-            score -= 5; // Small opponent threat
-          }
-        }
-      }
-    }
-  }
-
-  return score;
-};
 
     const handleUndo = () => {
       if (currentIndex > 0) {
@@ -620,7 +423,6 @@ const evaluateBoard = (board) => {
         )
     )
   )
-);
 };
 
 return () => React.createElement(Gobang, { assetsUrl: assetsUrl });
