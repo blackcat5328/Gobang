@@ -195,71 +195,71 @@ window.initGame = (React, assetsUrl) => {
       }
     };
 
-    const findBestMove = () => {
-      // Implement your AI logic here!
-      // This function should analyze the board and return the best move
-      // as an array [row, col]
+   const findBestMove = () => {
+  // Implement your AI logic here!
+  // This function should analyze the board and return the best move
+  // as an array [row, col]
 
-      // Using Minimax with Alpha-Beta Pruning
-      const bestMove = minimax(board, aiPlayer, 0, -Infinity, Infinity);
+  // Using Minimax with Alpha-Beta Pruning
+  const bestMove = minimax(board, aiPlayer, 0, -Infinity, Infinity);
 
-      // Update the board directly here
-      if (bestMove[0] !== -1 && bestMove[1] !== -1) {
-        const newBoard = board.map(row => row.slice());
-        newBoard[bestMove[0]][bestMove[1]] = aiPlayer;
-        setBoard(newBoard);
+  // Update the board directly here
+  if (bestMove[0] !== -1 && bestMove[1] !== -1) {
+    const newBoard = board.map(row => row.slice());
+    newBoard[bestMove[0]][bestMove[1]] = aiPlayer;
+    setBoard(newBoard);
 
-        setHistory([...history.slice(0, currentIndex + 1), newBoard]);
-        setCurrentIndex(currentIndex + 1);
+    setHistory([...history.slice(0, currentIndex + 1), newBoard]);
+    setCurrentIndex(currentIndex + 1);
 
-        setMoveRecords([...moveRecords, `Player ${aiPlayer}: (${bestMove[0]}, ${bestMove[1]})`]);
+    setMoveRecords([...moveRecords, `Player ${aiPlayer}: (${bestMove[0]}, ${bestMove[1]})`]);
 
-        if (checkWin(bestMove[0], bestMove[1], aiPlayer)) {
-          setWinner(aiPlayer);
+    if (checkWin(bestMove[0], bestMove[1], aiPlayer)) {
+      setWinner(aiPlayer);
+    } else {
+      setCurrentPlayer(aiPlayer === 1 ? 2 : 1);
+      setTimer(60);
+    }
+  }
+
+  return bestMove;
+};
+
+const minimax = (board, player, depth, alpha, beta) => {
+  if (checkWin(board, player)) {
+    return player === aiPlayer ? Infinity : -Infinity;
+  } else if (depth === 5) { // Adjust depth for performance
+    return evaluateBoard(board);
+  }
+
+  let bestScore = player === aiPlayer ? -Infinity : Infinity;
+  for (let row = 0; row < 15; row++) {
+    for (let col = 0; col < 15; col++) {
+      if (board[row][col] === 0) {
+        const newBoard = board.map(r => r.slice());
+        newBoard[row][col] = player;
+
+        const score = minimax(newBoard, player === 1 ? 2 : 1, depth + 1, alpha, beta);
+
+        if (player === aiPlayer) {
+          bestScore = Math.max(bestScore, score);
+          alpha = Math.max(alpha, bestScore);
         } else {
-          setCurrentPlayer(aiPlayer === 1 ? 2 : 1);
-          setTimer(60);
+          bestScore = Math.min(bestScore, score);
+          beta = Math.min(beta, bestScore);
+        }
+
+        if (beta <= alpha) {
+          return bestScore; // Alpha-beta pruning
         }
       }
+    }
+  }
 
-      return bestMove;
-    };
+  return bestScore;
+};
 
-    const minimax = (board, player, depth, alpha, beta) => {
-      if (checkWin(board, player)) {
-        return player === aiPlayer ? Infinity : -Infinity;
-      } else if (depth === 5) { // Adjust depth for performance
-        return evaluateBoard(board);
-      }
-
-      let bestScore = player === aiPlayer ? -Infinity : Infinity;
-      for (let row = 0; row < 15; row++) {
-        for (let col = 0; col < 15; col++) {
-          if (board[row][col] === 0) {
-            const newBoard = board.map(r => r.slice());
-            newBoard[row][col] = player;
-
-            const score = minimax(newBoard, player === 1 ? 2 : 1, depth + 1, alpha, beta);
-
-            if (player === aiPlayer) {
-              bestScore = Math.max(bestScore, score);
-              alpha = Math.max(alpha, bestScore);
-            } else {
-              bestScore = Math.min(bestScore, score);
-              beta = Math.min(beta, bestScore);
-            }
-
-            if (beta <= alpha) {
-              return bestScore; // Alpha-beta pruning
-            }
-          }
-        }
-      }
-
-      return bestScore;
-    };
-
-   const evaluateBoard = (board) => {
+const evaluateBoard = (board) => {
   let score = 0;
 
   // Check for potential threats and winning lines in all directions
