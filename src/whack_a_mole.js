@@ -19,7 +19,7 @@ window.initGame = (React, assetsUrl) => {
     const [moveRecords, setMoveRecords] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
     const [aiMode, setAiMode] = useState(0); // 0: Off, 1: On
-    const [aiPlayer, setAiPlayer] = useState(2); // AI player (Black or White)
+    const [aiPlayer, setAiPlayer] = useState(1); // AI player (Black or White)
 
     useEffect(() => {
       let interval;
@@ -40,6 +40,11 @@ window.initGame = (React, assetsUrl) => {
         setTimer(60);
       }
     }, [timer, currentPlayer]);
+
+    // Add the function to change AI player
+    const changeAiPlayer = () => {
+      setAiPlayer(aiPlayer === 1 ? 2 : 1);
+    };
 
     const checkWin = (row, col, player) => {
       let count = 0;
@@ -458,15 +463,13 @@ const evaluateBoard = (board) => {
       setShowHistory(prev => !prev);
     };
 
-   const handleAiSwitch = () => {
+    const handleAiSwitch = () => {
       setAiMode(prevAiMode => (prevAiMode + 1) % 2); // Toggle AI mode
       if (aiMode === 1) {
-        // Set AI player to the *opposite* of the current player
-        setAiPlayer(currentPlayer === 1 ? 2 : 1);
+        changeAiPlayer(); // Call function to change AI player
       }
     };
 
-    // Trigger AI move only when it's the AI's turn
     useEffect(() => {
       if (aiMode === 1 && currentPlayer === aiPlayer) {
         findBestMove();
