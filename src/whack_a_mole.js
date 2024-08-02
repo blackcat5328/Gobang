@@ -288,48 +288,48 @@ window.initGame = (React, assetsUrl) => {
     return bestMove;
   };
 
-  const checkBlockThreeLink = (row, col, opponentPlayer) => {
-    const directions = [
-      [0, 1], // Right
-      [1, 0], // Down
-      [1, 1], // Diagonal (bottom-right)
-      [1, -1], // Diagonal (bottom-left)
-    ];
+   const checkBlockThreeLink = (row, col, opponentPlayer) => {
+      const directions = [
+        [0, 1], // Right
+        [1, 0], // Down
+        [1, 1], // Diagonal (bottom-right)
+        [1, -1], // Diagonal (bottom-left)
+      ];
 
-    for (const [dr, dc] of directions) {
-      let count = 0;
-      let openEnds = 0;
-      let r = row, c = col;
+      for (const [dr, dc] of directions) {
+        let count = 0;
+        let openEnds = 0;
+        let r = row, c = col;
 
-      // Count consecutive opponent pieces in the direction
-      while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === opponentPlayer) {
-        count++;
-        r += dr;
-        c += dc;
+        // Count consecutive opponent pieces in the direction
+        while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === opponentPlayer) {
+          count++;
+          r += dr;
+          c += dc;
+        }
+
+        // Count open ends
+        r = row - dr, c = col - dc;
+        while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+          openEnds++;
+          r -= dr;
+          c -= dc;
+        }
+        r = row + dr, c = col + dc;
+        while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+          openEnds++;
+          r += dr;
+          c += dc;
+        }
+
+        // Check if the move blocks a 3-link
+        if (count === 3 && openEnds === 2) {
+          return true; // Blocking move found
+        }
       }
 
-      // Count open ends
-      r = row - dr, c = col - dc;
-      while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
-        openEnds++;
-        r -= dr;
-        c -= dc;
-      }
-      r = row + dr, c = col + dc;
-      while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
-        openEnds++;
-        r += dr;
-        c += dc;
-      }
-
-      // Check if the move blocks a 3-link
-      if (count === 3 && openEnds === 2) {
-        return true; // Blocking move found
-      }
-    }
-
-    return false; // No blocking move found
-  };
+      return false; // No blocking move found
+    };
 
 const minimax = (board, player, depth, alpha, beta) => {
   if (checkWin(board, player)) {
