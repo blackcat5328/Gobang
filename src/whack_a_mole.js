@@ -200,14 +200,29 @@ window.initGame = (React, assetsUrl) => {
       }
     };
 
-   const findBestMove = () => {
+  const findBestMove = () => {
     // Easy AI logic:
     // 1. Prioritize placing pieces near existing pieces of the same color.
     // 2. If no valid moves near existing pieces, place randomly.
+    // 3. Check if 3-link can be blocked
 
     let bestMove = [-1, -1]; // Default to no move
     let maxScore = -Infinity;
 
+    // Check if 3-link can be blocked
+    for (let row = 0; row < 15; row++) {
+      for (let col = 0; col < 15; col++) {
+        if (board[row][col] === 0) {
+          // Check if placing a piece here blocks a 3-link of the opponent
+          if (checkBlockThreeLink(row, col, aiPlayer === 1 ? 2 : 1)) {
+            bestMove = [row, col];
+            return bestMove; // Immediately return if a blocking move is found
+          }
+        }
+      }
+    }
+
+    // If no blocking move is found, continue with the original logic
     for (let row = 0; row < 15; row++) {
       for (let col = 0; col < 15; col++) {
         if (board[row][col] === 0) {
@@ -271,6 +286,49 @@ window.initGame = (React, assetsUrl) => {
     }
 
     return bestMove;
+  };
+
+  const checkBlockThreeLink = (row, col, opponentPlayer) => {
+    const directions = [
+      [0, 1], // Right
+      [1, 0], // Down
+      [1, 1], // Diagonal (bottom-right)
+      [1, -1], // Diagonal (bottom-left)
+    ];
+
+    for (const [dr, dc] of directions) {
+      let count = 0;
+      let openEnds = 0;
+      let r = row, c = col;
+
+      // Count consecutive opponent pieces in the direction
+      while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === opponentPlayer) {
+        count++;
+        r += dr;
+        c += dc;
+      }
+
+      // Count open ends
+      r = row - dr, c = col - dc;
+      while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+        openEnds++;
+        r -= dr;
+        c -= dc;
+      }
+      r = row + dr, c = col + dc;
+      while (r >= 0 && c >= 0 && r < 15 && c < 15 && board[r][c] === 0) {
+        openEnds++;
+        r += dr;
+        c += dc;
+      }
+
+      // Check if the move blocks a 3-link
+      if (count === 3 && openEnds === 2) {
+        return true; // Blocking move found
+      }
+    }
+
+    return false; // No blocking move found
   };
 
 const minimax = (board, player, depth, alpha, beta) => {
